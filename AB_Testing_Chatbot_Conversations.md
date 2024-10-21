@@ -81,8 +81,6 @@ To compare different versions of the chatbot, we will run an A/B test with two v
 Let's write Python code to simulate user conversations and capture the success metrics.
 
 ```python
-import random
-
 # Define a function to simulate a conversation for Version A
 def simulate_conversation_version_a():
     conversation = [
