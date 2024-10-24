@@ -81,6 +81,9 @@ To compare different versions of the chatbot, we will run an A/B test with two v
 Let's write Python code to simulate user conversations and capture the success metrics.
 
 ```python
+import random
+
+
 # Define a function to simulate a conversation for Version A
 def simulate_conversation_version_a():
     conversation = [
@@ -99,7 +102,10 @@ def simulate_conversation_version_a():
         ("Bot", "Your room is confirmed. Have a great stay!")
     ]
     
-    return conversation, len(conversation), True, "Successful"
+    completed = random.choice([True, False])
+    status = "Successful" if completed else "Unsuccessful"
+
+    return conversation, len(conversation), completed, status
 
 # Define a function to simulate a conversation for Version B
 def simulate_conversation_version_b():
@@ -113,7 +119,10 @@ def simulate_conversation_version_b():
         ("Bot", "You're all set! Have a great stay.")
     ]
     
-    return conversation, len(conversation), True, "Successful"
+    completed = random.choice([True, False])
+    status = "Successful" if completed else "Unsuccessful"
+
+    return conversation, len(conversation), completed, status
 
 # Simulate multiple conversations and compare metrics
 def run_ab_test(n_simulations=100):
@@ -137,11 +146,11 @@ def run_ab_test(n_simulations=100):
             "status": status_b
         })
     
-    # Calculate average conversation length for both versions
+    # Calculate the average conversation length for both versions
     avg_length_a = sum([r["length"] for r in version_a_results]) / n_simulations
     avg_length_b = sum([r["length"] for r in version_b_results]) / n_simulations
     
-    # Calculate success rate for both versions
+    # Calculate the success rate for both versions
     success_rate_a = sum([r["completed"] for r in version_a_results]) / n_simulations
     success_rate_b = sum([r["completed"] for r in version_b_results]) / n_simulations
     
@@ -165,19 +174,18 @@ print(ab_test_results)
 ```python
 {
     "Version A": {
-        "Average Length": 12.0,
-        "Success Rate": 1.0
+        "Average Length": 13.0,
+        "Success Rate": 0.58
     },
     "Version B": {
-        "Average Length": 6.0,
-        "Success Rate": 1.0
+        "Average Length": 7.0,
+        "Success Rate": 0.48
     }
 }
 ```
 
 ### Interpretation of Results
 Based on the results:
-- **Version B** offers a shorter conversation length**, indicating that the improved chatbot is more efficient.
-- **Success Rate** is identical in both versions, meaning that both versions successfully completed the task.
+- **Version B** offers a shorter conversation length**, indicating that the improved chatbot is more efficient but less successful.
   
-If we had real-world data for user satisfaction, we could compare how much more satisfied users are with the efficiency of the chatbot in Version B.
+If we had real-world data for user satisfaction, we could compare how much more satisfied users are with the efficiency of the chatbot in Version B considering factoring in the shorter interaction.
