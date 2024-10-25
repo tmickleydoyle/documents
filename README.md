@@ -6,6 +6,8 @@ This document explains how to use A/B testing to evaluate the success of chatbot
 
 ###  [./Fork_Sharing_Data_Across_Stores.md](./Fork_Sharing_Data_Across_Stores.md)
 
+Fork is a centralized data distribution solution that routes data across production and analytics environments, maintaining separation between transactional and analytical processes. By offloading non-production queries from production databases, Fork improves database performance and stability, preventing disruptions to operational integrity. This architecture is built on a routing layer that directs data to appropriate destinations based on their needs, incorporating transformation rules for each type of data store. The Fork solution enables scalable data sharing across systems, supporting consistent, real-time data flows for production and allowing efficient data analysis for analytics. This structure also reduces operational costs by avoiding redundant processing and promoting data accuracy and system reliability.
+
 ### [./Monstera_Company_Metric_Design.md](./Monstera_Company_Metric_Design.md)
 
 Monstera is a structured approach to designing and managing company metrics, providing a unified framework that captures how entities interact with products and features. Built on an event tree hierarchy, the system allows teams across product, engineering, and operations to analyze broad trends and specific actions seamlessly. This framework standardizes data collection and promotes collaboration, ensuring that all teams—from engineering to leadership—align their actions with company goals. By integrating reliable, transactional data models and certified dashboards, Monstera enhances decision-making, scalability, and overall business insights.
