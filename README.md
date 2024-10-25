@@ -14,6 +14,8 @@ Monstera is a structured approach to designing and managing company metrics, pro
 
 ### [./Monstera_Projects.md](./Monstera_Projects.md)
 
+This is a list of possible projects based on the Monstera Company Metrics Design.
+
 ### [./Prioritizing_Projects.md](./Prioritizing_Projects.md)
 
 In managing data teams that span data platform development, analytics engineering, and data analysis, it's crucial to prioritize projects to maximize impact and efficiency strategically. The goal is to balance the need to gain new insights, build robust systems, and support the business's evolving requirements. This document outlines the approach to project prioritization, considering various factors that influence the decision-making process, including the balance between optimizing for new customers and retaining existing customers.
