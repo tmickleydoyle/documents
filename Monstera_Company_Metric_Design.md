@@ -142,7 +142,7 @@ Additionally, all dashboard names will follow a consistent format to provide imm
 
 This standard naming system provides a clear understanding of the dashboard's focus and hierarchy, improving navigation and reducing ambiguity.
 
-**5. “Land, Learn, and Leave” Design Principle **
+**5. “Land, Learn, and Leave” Design Principle**
 The overall design philosophy behind the dashboards is for users to "land, learn, and leave." The goal is to provide a self-service environment where users can quickly access the data they need, understand it without external assistance, and make informed decisions before moving on to other tasks. This principle is supported by:
 - **Clear naming conventions** that allow users to immediately know what they are viewing.
 - **Consistent design** across all dashboards, reducing the learning curve.
