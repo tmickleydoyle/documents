@@ -384,7 +384,3 @@ The following are examples of API endpoints that the chatbot can call:
 |   Model Tuning      |
 +---------------------+
 ```
-
-## 19. Conclusion
-
-This comprehensive system design document outlines the architecture and functionality of a healthcare chatbot that assists users in retrieving dynamic healthcare information. The system includes user and event tracking to improve the chatbot's performance over time, ensuring a smooth and efficient user experience. By considering all critical components, including security, compliance, performance, error handling, monitoring, integration, user feedback, legal and ethical considerations, documentation, training, and future roadmap, this document provides a holistic view of the healthcare chatbot system.
