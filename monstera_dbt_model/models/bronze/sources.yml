@@ -1,0 +1,80 @@
+version: 2
+
+sources:
+  - name: bronze
+    description: "Raw data tables in the bronze schema"
+    schema: bronze
+    tables:
+      - name: events
+        description: "Raw events following Monstera standardized schema"
+        columns:
+          - name: event_id
+            description: "Unique identifier for the event"
+            tests:
+              - unique
+              - not_null
+          - name: entity_id
+            description: "Unique identifier for the entity performing the action"
+            tests:
+              - not_null
+          - name: entity_type
+            description: "Classification of the entity (user, account, etc.)"
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ["user", "system", "admin"]
+          - name: event_type
+            description: "Specific action taken"
+            tests:
+              - not_null
+          - name: timestamp
+            description: "When the event occurred"
+            tests:
+              - not_null
+          - name: location
+            description: "Where the event occurred"
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ["web_app", "mobile_app", "api", "desktop_app"]
+
+      - name: users
+        description: "User entity data"
+        columns:
+          - name: user_id
+            description: "Unique identifier for the user"
+            tests:
+              - unique
+              - not_null
+          - name: email
+            description: "User email address"
+            tests:
+              - unique
+              - not_null
+
+      - name: accounts
+        description: "Account entity data"
+        columns:
+          - name: account_id
+            description: "Unique identifier for the account"
+            tests:
+              - unique
+              - not_null
+
+      - name: projects
+        description: "Project entity data"
+        columns:
+          - name: project_id
+            description: "Unique identifier for the project"
+            tests:
+              - unique
+              - not_null
+
+      - name: videos
+        description: "Video entity data"
+        columns:
+          - name: video_id
+            description: "Unique identifier for the video"
+            tests:
+              - unique
+              - not_null

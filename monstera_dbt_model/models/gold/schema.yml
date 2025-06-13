@@ -1,0 +1,86 @@
+version: 2
+
+models:
+  - name: gold_overall_metrics
+    description: |
+      Overall View Dashboard metrics - Monstera Framework Dashboard Type 1
+
+      Top-level dashboards for leadership and strategic decision-making.
+      Includes big number tiles and trends over last 90 days as specified in
+      the Monstera dashboard design standards.
+
+      Metrics include:
+      - Activity Metrics: Daily active users, total events, content creation
+      - Engagement Metrics: Average engagement scores, session patterns
+      - Growth Metrics: Week-over-week and month-over-month growth rates
+    columns:
+      - name: metric_date
+        description: "Date for the metrics"
+        tests:
+          - not_null
+      - name: daily_active_users
+        description: "Number of unique users active on this date"
+      - name: dau_7day_avg
+        description: "7-day rolling average of daily active users"
+      - name: mau_30day
+        description: "30-day rolling count of monthly active users"
+      - name: is_last_90_days
+        description: "Boolean flag for filtering to last 90 days (dashboard requirement)"
+
+  - name: gold_segment_metrics
+    description: |
+      Segment View Dashboard metrics - Monstera Framework Dashboard Type 2
+
+      Focus on breaking down overall metrics by key entity segments:
+      - Geography (country-based segmentation)
+      - Account characteristics (type, industry)
+      - User tenure segments
+
+      Enables analysis of how different segments contribute to overall performance
+      and identification of trends or anomalies in specific groups.
+      Up to 18 months of data for line and bar charts per Monstera design.
+    columns:
+      - name: event_month
+        description: "Month for aggregated metrics"
+        tests:
+          - not_null
+      - name: country
+        description: "Country segment"
+      - name: account_type
+        description: "Account type segment (enterprise, small_business, individual)"
+      - name: user_tenure_segment
+        description: "User tenure segment (new_user, recent_user, established_user, veteran_user)"
+      - name: monthly_active_users
+        description: "Monthly active users for this segment"
+      - name: mau_share_pct
+        description: "Percentage share of total MAU for this segment"
+
+  - name: gold_activity_metrics
+    description: |
+      Activity View Dashboard metrics - Monstera Framework Dashboard Type 3
+
+      Most granular level focusing on specific actions and workflows.
+      Shows detailed user behavior patterns including:
+      - Event-level activity patterns
+      - Workflow funnel analysis (video creation, project workflows)
+      - Time-based usage patterns (hourly, daily patterns)
+      - Platform and device usage
+      - Conversion rates between workflow steps
+
+      These metrics roll up into Segment Views and provide insights into
+      how actions differ across various segments.
+    columns:
+      - name: event_date
+        description: "Date for activity metrics"
+        tests:
+          - not_null
+      - name: event_type
+        description: "Type of event being analyzed"
+      - name: create_to_upload_rate
+        description: "Conversion rate from video creation to upload (%)"
+      - name: upload_to_publish_rate
+        description: "Conversion rate from video upload to publish (%)"
+      - name: activity_intensity
+        description: "Activity level classification (high, medium, low)"
+      - name: user_engagement_segment
+        description: "User engagement classification based on tenure and activity"

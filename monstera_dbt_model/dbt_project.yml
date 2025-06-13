@@ -1,0 +1,46 @@
+name: "monstera_metrics"
+version: "1.0.0"
+config-version: 2
+
+# This setting configures which "profile" dbt uses for this project.
+profile: "monstera_metrics"
+
+# These configurations specify where dbt should look for different types of files.
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Model configurations
+models:
+  monstera_metrics:
+    # Bronze layer - raw data, minimal transformations
+    bronze:
+      +materialized: table
+      +schema: bronze
+
+    # Silver layer - cleaned and enriched data
+    silver:
+      +materialized: table
+      +schema: silver
+
+    # Gold layer - aggregated metrics and dimensional models
+    gold:
+      +materialized: table
+      +schema: gold
+
+# Seed configurations
+seeds:
+  monstera_metrics:
+    +schema: bronze
+
+# Test configurations
+tests:
+  monstera_metrics:
+    +store_failures: true

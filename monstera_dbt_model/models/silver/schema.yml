@@ -1,0 +1,68 @@
+version: 2
+
+models:
+  - name: silver_events_enriched
+    description: |
+      Cleaned and enriched events with entity information following Monstera framework.
+
+      This model implements the "Enriching action data with entity data" concept from the
+      Monstera design document, enabling segmented metrics by joining events with user
+      and account information.
+    columns:
+      - name: event_id
+        description: "Unique identifier for the event"
+        tests:
+          - unique
+          - not_null
+      - name: entity_id
+        description: "Entity performing the action"
+        tests:
+          - not_null
+      - name: country
+        description: "User's country for geographic segmentation"
+      - name: account_type
+        description: "Account type for segment analysis (enterprise, small_business, individual)"
+      - name: user_tenure_days
+        description: "Days since user creation at time of event - enables tenure-based segmentation"
+
+  - name: silver_user_sessions
+    description: |
+      User sessions derived from login/logout events for engagement analysis.
+
+      Implements session-based metrics as described in the Monstera engagement metrics category.
+    columns:
+      - name: session_id
+        description: "Unique identifier for the session"
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        description: "User who performed the session"
+        tests:
+          - not_null
+      - name: session_duration_minutes
+        description: "Length of session in minutes"
+        tests:
+          - not_null
+
+  - name: silver_daily_user_activity
+    description: |
+      Daily aggregated user activity for retention and engagement analysis.
+
+      This model supports the three types of metrics defined in Monstera:
+      - Activity Metrics: What entities are doing (logins, uploads, interactions)
+      - Engagement Metrics: How entities are interacting (session counts, event types)
+      - Outcome Metrics: Can be derived from engagement scores and retention patterns
+    columns:
+      - name: user_id
+        description: "User identifier"
+        tests:
+          - not_null
+      - name: event_date
+        description: "Date of activity"
+        tests:
+          - not_null
+      - name: user_tenure_segment
+        description: "User tenure category (new_user, recent_user, established_user, veteran_user)"
+      - name: engagement_score
+        description: "Calculated engagement score based on weighted activities"

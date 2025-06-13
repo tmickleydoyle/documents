@@ -1,0 +1,78 @@
+version: 2
+
+models:
+  - name: bronze_events
+    description: "Raw events data following Monstera standardized schema"
+    columns:
+      - name: event_id
+        description: "Unique identifier for the event"
+        tests:
+          - unique
+          - not_null
+      - name: entity_id
+        description: "Unique identifier for the entity performing the action"
+        tests:
+          - not_null
+      - name: entity_type
+        description: "Classification of the entity (user, system, admin)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["user", "system", "admin"]
+      - name: event_type
+        description: "Specific action taken (login, video_create, etc.)"
+        tests:
+          - not_null
+      - name: event_timestamp
+        description: "When the event occurred"
+        tests:
+          - not_null
+      - name: location
+        description: "Where the event occurred (web_app, mobile_app, etc.)"
+        tests:
+          - not_null
+
+  - name: bronze_users
+    description: "Raw user entity data - Primary entities that perform actions"
+    columns:
+      - name: user_id
+        description: "Unique identifier for the user"
+        tests:
+          - unique
+          - not_null
+      - name: email
+        description: "User email address"
+        tests:
+          - unique
+          - not_null
+      - name: account_id
+        description: "Foreign key to accounts table"
+        tests:
+          - not_null
+
+  - name: bronze_accounts
+    description: "Raw account entity data - Secondary entities that users belong to"
+    columns:
+      - name: account_id
+        description: "Unique identifier for the account"
+        tests:
+          - unique
+          - not_null
+
+  - name: bronze_projects
+    description: "Raw project entity data - Secondary entities created by users"
+    columns:
+      - name: project_id
+        description: "Unique identifier for the project"
+        tests:
+          - unique
+          - not_null
+
+  - name: bronze_videos
+    description: "Raw video entity data - Secondary entities created by users within projects"
+    columns:
+      - name: video_id
+        description: "Unique identifier for the video"
+        tests:
+          - unique
+          - not_null

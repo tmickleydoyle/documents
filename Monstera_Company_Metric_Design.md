@@ -112,7 +112,7 @@ Every event in the Monstera system must adhere to this standardized schema:
 {
   "entity_id": "string (required)",
   "entity_type": "string (required)",
-  "event_type": "string (required)", 
+  "event_type": "string (required)",
   "timestamp": "ISO 8601 datetime (required)",
   "location": "string (required)",
   "session_id": "string (optional)",
@@ -133,7 +133,7 @@ Every event in the Monstera system must adhere to this standardized schema:
 Entities are classified into hierarchical types that help with both organization and analysis:
 
 **Primary Entities** (those that take actions):
-- `user`: Individual people using the platform  
+- `user`: Individual people using the platform
 - `system`: Automated processes or integrations
 - `admin`: Platform administrators
 
@@ -149,7 +149,7 @@ This classification enables metrics like "users per account" or "videos per proj
 
 Turning the Monstera framework into reality requires a well-thought-out implementation plan. The following steps provide a roadmap for successful implementation:
 
-**1. Surveying the Data Landscape**  
+**1. Surveying the Data Landscape**
 Before any code is written or data is moved, it is crucial to first conduct a comprehensive survey of the data landscape. This involves mapping out how entities (such as users, accounts, videos, or projects) interact with products and features, and understanding the relationships between these interactions. For instance, consider the workflow where a user signs up for an account, creates a video project, adds comments to different parts of the video, and publishes it. Each of these actions follows a specific order, and mapping this sequence helps define how the metrics will be structured.
 
 Key points in this phase include:
@@ -159,23 +159,23 @@ Key points in this phase include:
 
 By fully understanding the flow of interactions, we can begin to frame the data model that will be used to generate reliable and accurate metrics.
 
-**2. Designing Event Trees and Metrics**  
+**2. Designing Event Trees and Metrics**
 Once the data landscape is well understood, the next step is to design the event trees that will feed into the metrics. Event trees represent how various entity interactions can be grouped into meaningful sequences, forming the backbone of the metric system.
 
 - **Create a hierarchy of events**: Start by defining the top-level events that represent major user actions (e.g., signing up, uploading a video, publishing content). Beneath each top-level event, smaller sub-events may occur (e.g., within the process of uploading a video, there could be stages like adding a title, uploading the file, and saving the draft).
-- **Define standard metrics for each workflow**: With the event trees in place, metrics can be created to measure the performance of each key event. These metrics could include user engagement rates (e.g., how many users progress through all steps of video creation), retention rates, and frequency of specific actions. 
+- **Define standard metrics for each workflow**: With the event trees in place, metrics can be created to measure the performance of each key event. These metrics could include user engagement rates (e.g., how many users progress through all steps of video creation), retention rates, and frequency of specific actions.
 - **Iterative approach to metric creation**: While the entire company doesn’t need to be mapped out initially, complete workflows for critical processes must be defined to avoid gaps in data. As new workflows or product features are introduced, the event trees can be expanded or refined accordingly.
 
-**3. Building Standardized Data Models**  
+**3. Building Standardized Data Models**
 With the event trees and entity workflows established, the next step is to develop standardized data models that centralize and organize data in a way that enables clean, consistent metric calculations. These models serve as the foundation for how data is stored, accessed, and transformed into actionable insights.
 
 - **Create action-focused tables**: Centralize all actions or activities that entities perform into "action tables." These tables should consolidate data from various sources but maintain a focus on the specific activities taken by entities within defined families. For example, all actions taken in the video creation and update workflow should be grouped together. User signup and member invitations should be in a separate flow.
-  
+
 - **Entity vs. activity tables**: To maintain clarity and separation of concerns, create two types of tables:
   - **Activity/action tables**: Capture all interactions and activities performed by entities, such as logging in, uploading videos, or posting comments. These tables organize actions in a structured and chronological manner. Transactional data preferred.
   - **Entity tables**: Store the descriptive data related to entities themselves (e.g., user profiles, account details, video metadata). These tables reflect the latest state of each entity, allowing for easy enrichment of the action tables when performing analysis. CDC or similar tables structure preferred.
 
-**4. Building Metrics Values**  
+**4. Building Metrics Values**
 Once the data models are in place, the final step is to calculate the metrics themselves. The calculation of metrics can vary based on the company’s data infrastructure, and there are multiple approaches to choose from, depending on the level of complexity and the desired responsiveness of the system.
 
 - **Enriching action data with entity data**: At this stage, it is crucial to join the action tables back with the entity tables. This step allows for segmenting the overall metrics into more granular metrics based on key attributes of the entities. For example, instead of just tracking general activity metrics (like login frequency or video uploads), we can create more specific metrics by segmenting the data. Some examples include:
@@ -197,26 +197,26 @@ By joining action and entity tables, metrics become far more versatile and infor
 
 Successfully implementing the Monstera framework requires careful planning and execution. The following sections outline the key steps and considerations for bringing the Monstera framework to life within an organization.
 
-**1. Surveying the Data Landscape**  
+**1. Surveying the Data Landscape**
 Before any technical implementation, it's crucial to understand the current state of data within the organization. This includes identifying existing data sources, understanding how data flows between systems, and recognizing any immediate gaps or issues. Engage with stakeholders across the organization to gather information about current metrics, reporting tools, and pain points.
 
-**2. Designing Event Trees and Metrics**  
+**2. Designing Event Trees and Metrics**
 With a clear understanding of the data landscape, the next step is to design the event trees that will form the basis of the metrics. Event trees map out the relationships and hierarchies of events and metrics, providing a structured approach to metric development.
 
 - **Create a hierarchy of events**: Define the top-level events that represent major user actions, and identify the sub-events that occur within each top-level event.
 - **Define standard metrics for each workflow**: Develop metrics that measure the performance of each key event, focusing on user engagement, retention, and other critical business outcomes.
 - **Iterative approach to metric creation**: Start with the most critical workflows and metrics, and iteratively expand to cover additional areas as needed.
 
-**3. Building Standardized Data Models**  
+**3. Building Standardized Data Models**
 Standardized data models are essential for ensuring consistency and reliability in metric calculations. These models define how data is stored, accessed, and transformed within the organization's data infrastructure.
 
 - **Create action-focused tables**: Centralize all actions or activities that entities perform into "action tables," consolidating data from various sources while maintaining a focus on specific activities.
-  
+
 - **Entity vs. activity tables**: Create two types of tables to maintain clarity and separation of concerns:
   - **Activity/action tables**: Capture all interactions and activities performed by entities in a structured and chronological manner. Transactional data preferred.
   - **Entity tables**: Store the descriptive data related to entities themselves, allowing for easy enrichment of the action tables when performing analysis. CDC or similar tables structure preferred.
 
-**4. Building Metrics Values**  
+**4. Building Metrics Values**
 The calculation of metrics is a critical step in the implementation process. Metrics should be calculated in a way that ensures accuracy, consistency, and reliability.
 
 - **Enriching action data with entity data**: Join the action tables back with the entity tables to segment the overall metrics into more granular metrics based on key attributes of the entities.
@@ -367,19 +367,19 @@ A well-designed dashboard is essential for conveying metrics in a clear and acti
 **1. Dashboard Types and Tree Structure**
 The three dashboard types follow a hierarchical structure, allowing users to zoom in and out based on their level of analysis.
 
-- **Overall View Dashboards**:  
+- **Overall View Dashboards**:
   These are the top-level dashboards that provide a holistic view of the company's most important metrics. Designed for leadership and strategic decision-making, these dashboards include big number tiles to highlight the current state of key metrics such as total active users, revenue, or retention rates. Additionally, line or bar chart can be found here, but they will only include the last 90-days of data. Users will also be able to drill down from the Overall View into Segment or Activity View dashboards for a more detailed analysis.
-  
+
   **Example**: The overall dashboard might include metrics like "Monthly Active Users" or "Total Revenue," each represented with big number tiles alongside line and bar charts that show trends over time.
 
-- **Segment View Dashboards**:  
+- **Segment View Dashboards**:
   The Segment View dashboards focus on breaking down the overall metrics by key entity segments, such as geography, account type, or product usage. These dashboards allow users to understand how different segments contribute to the overall performance and identify trends or anomalies in specific groups. Line and bar charts will include up to 18-months of data.
-  
+
   **Example**: A Segment View dashboard might include a chart for "Monthly Active Users by Country" or "Revenue by Account Age," allowing teams to explore how different segments of the user base behave.
 
-- **Activity View Dashboards**:  
+- **Activity View Dashboards**:
   The Activity View dashboards are the most granular level, focusing on specific actions or workflows taken by entities. These dashboards show how users interact with the platform in detail, such as the number of videos uploaded, the average time spent on specific features, or the frequency of comments on videos. Activity metrics roll up into Segment Views, providing insights into how actions differ across various segments. Line and bar charts will include up to 18-months of data.
-  
+
   **Example**: An Activity View dashboard might track "Video Uploads by Day" or "Comments Added to Videos per User," giving teams detailed information about user behavior at a granular level.
 
 **2. Standardized Dashboard Design and Naming Conventions**
@@ -390,7 +390,7 @@ To maintain clarity and consistency, all dashboards will adhere to a **standard 
     1. **Bar charts**: For comparing discrete values, such as the number of users across different segments.
     2. **Line charts**: For tracking changes over time, such as daily active users over the past month.
     3. **Big number tiles**: To display current metric values, especially in Overall View dashboards, to highlight critical KPIs (e.g., total users, monthly revenue).
-  
+
   This limited selection of chart types ensures simplicity and uniformity, making it easier for users to understand the data at a glance.
 
 - **Color and Design Standards**:
@@ -400,7 +400,7 @@ To maintain clarity and consistency, all dashboards will adhere to a **standard 
   - Maintain consistent font sizes and spacing
   - All charts must have clear titles, axis labels, and legends
 
-- **Naming Conventions for Charts**:  
+- **Naming Conventions for Charts**:
   The naming of charts will follow a consistent pattern to provide users with clear information about what is being measured. The format for chart names will be:
 
 ```
@@ -412,9 +412,9 @@ To maintain clarity and consistency, all dashboards will adhere to a **standard 
   - **Timeframe**: Specifies the time period for the metric (e.g., "Current," "Last 90 Days").
   - **by Segment or Event** (optional): Indicates that the data is segmented or related to specific events (e.g., "by Country," "by Account Age").
 
-**Example**:  
-- "New Videos, Weekly Active, Last 90 Days by Country" (Segment View)  
-- "New Videos, Weekly Active, Last 90 Days by Status" (Activity View)  
+**Example**:
+- "New Videos, Weekly Active, Last 90 Days by Country" (Segment View)
+- "New Videos, Weekly Active, Last 90 Days by Status" (Activity View)
 - "New Videos, Weekly Active, Last 90 Days" (Overall View)
 
 **3. Dashboard Layout and Navigation Standards**
@@ -429,7 +429,7 @@ Every dashboard must follow this standardized layout:
 
 **Content Areas**:
 - **Summary Section** (top): Key metrics as big number tiles
-- **Trend Section** (middle): Time-series charts showing historical performance  
+- **Trend Section** (middle): Time-series charts showing historical performance
 - **Breakdown Section** (bottom): Segmented or detailed views of metrics
 
 **Footer Section**:
@@ -458,7 +458,7 @@ To ensure optimal user experience:
 
 **Accessibility Requirements**:
 - Color-blind friendly color palettes
-- High contrast ratios for text and backgrounds  
+- High contrast ratios for text and backgrounds
 - Screen reader compatible chart descriptions
 - Keyboard navigation support
 - Alt text for all visual elements
@@ -526,7 +526,7 @@ Clear ownership is essential for maintaining the integrity and utility of the Mo
 - Monitor application performance impact of tracking
 - Coordinate with data team on new event requirements
 
-**Frontend Engineers**  
+**Frontend Engineers**
 - Implement client-side event tracking
 - Ensure user privacy and consent compliance
 - Optimize tracking for performance
@@ -568,7 +568,7 @@ Every metric in the Monstera system has three types of owners:
 - Responsible for metric relevance and business alignment
 - Typically a Product Manager or Operations Leader
 
-**Technical Owner**  
+**Technical Owner**
 - Ensures accurate calculation and data quality
 - Maintains the underlying data pipelines and models
 - Monitors for technical issues and data anomalies
@@ -589,13 +589,13 @@ When issues arise, follow this escalation path:
 - Timeline: Response within 4 business hours
 - Resolution: Clarification, documentation update, or training
 
-**Level 2: Data Quality Issues**  
+**Level 2: Data Quality Issues**
 - Contact: Analytics Engineering team
 - Timeline: Response within 2 business hours
 - Resolution: Investigation, fix, or temporary workaround
 
 **Level 3: System Outages**
-- Contact: Data Platform Engineering team  
+- Contact: Data Platform Engineering team
 - Timeline: Response within 1 business hour
 - Resolution: System restoration and post-mortem
 

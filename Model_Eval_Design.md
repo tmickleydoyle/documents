@@ -3,10 +3,10 @@
 
 > **A comprehensive framework for evaluating AI models in agentic code generation workflows using semantic similarity analysis - designed for teams building production AI systems**
 
-**Author:** [@tmickleydoyle](https://github.com/tmickleydoyle)  
-**Published:** June 2025  
-**Version:** 0.1  
-**Framework Type:** Production AI Infrastructure  
+**Author:** [@tmickleydoyle](https://github.com/tmickleydoyle)
+**Published:** June 2025
+**Version:** 0.1
+**Framework Type:** Production AI Infrastructure
 
 ---
 
@@ -38,7 +38,7 @@ Imagine you're running a company that builds AI-powered coding assistants. Every
 **Our Solution:** An automated system that can evaluate thousands of code samples in hours instead of weeks, using "semantic similarity" - essentially measuring how well AI-generated code matches expert-written code in terms of functionality, quality, and best practices.
 
 ### What Makes This Different
-Traditional evaluation asks: "Does this code work?" 
+Traditional evaluation asks: "Does this code work?"
 Our framework asks: "How well does this code work, and how does it compare to what an expert would write?"
 
 Instead of simple pass/fail testing, we measure multiple dimensions:
@@ -57,7 +57,7 @@ Organizations using this framework can expect:
 
 ### Who This Is For
 - **AI Engineering Teams** building code generation products
-- **DevTools Companies** integrating AI into development workflows  
+- **DevTools Companies** integrating AI into development workflows
 - **Enterprise Organizations** deploying AI coding assistants at scale
 - **Research Teams** needing systematic model comparison methodologies
 
@@ -139,12 +139,12 @@ Traditional evaluation focuses on **syntax matching** - but two pieces of code c
 // Golden Standard (Human-written, high-quality)
 const UserProfile = ({ user, onEdit }) => {
   const [isEditing, setIsEditing] = useState(false);
-  
+
   const handleSave = (updatedUser) => {
     onEdit(updatedUser);
     setIsEditing(false);
   };
-  
+
   return (
     <div className="user-profile">
       {isEditing ? (
@@ -159,20 +159,20 @@ const UserProfile = ({ user, onEdit }) => {
 // Model Output (functionally equivalent, different style)
 function UserProfile(props) {
   const [editing, setEditing] = useState(false);
-  
+
   return (
     <div className="user-profile">
-      {editing ? 
-        <UserEditForm 
-          user={props.user} 
+      {editing ?
+        <UserEditForm
+          user={props.user}
           onSave={(user) => {
             props.onEdit(user);
             setEditing(false);
-          }} 
+          }}
         /> :
-        <UserDisplay 
-          user={props.user} 
-          onEdit={() => setEditing(true)} 
+        <UserDisplay
+          user={props.user}
+          onEdit={() => setEditing(true)}
         />
       }
     </div>
@@ -201,7 +201,7 @@ function UserProfile(props) {
 #### 1. **Functional Equivalence Detection**
 Recognizes that different code styles can achieve identical functionality
 
-#### 2. **Quality-Aware Evaluation** 
+#### 2. **Quality-Aware Evaluation**
 Considers maintainability, readability, and best practices - not just correctness
 
 #### 3. **Scalable Assessment**
@@ -227,19 +227,19 @@ graph TB
         G --> H[Comparative Analytics]
         H --> I[Model Rankings & Insights]
     end
-    
+
     subgraph "Analysis Dimensions"
         J[Functional Equivalence]
         K[Structural Similarity]
         L[Style Consistency]
         M[Performance Analysis]
     end
-    
+
     F --> J
     F --> K
     F --> L
     F --> M
-    
+
     style E fill:#e1f5fe
     style F fill:#f3e5f5
     style H fill:#e8f5e8
@@ -280,7 +280,7 @@ class ModelTestHarness:
     def __init__(self, model_config):
         self.model = load_model(model_config)
         self.prompt_generator = PromptGenerator()
-    
+
     def evaluate_model(self, golden_dataset):
         results = []
         for example in golden_dataset:
@@ -329,7 +329,7 @@ sequenceDiagram
     participant MT as Model Tester
     participant SA as Semantic Analyzer
     participant AD as Analytics Dashboard
-    
+
     MT->>GS: Load test cases
     MT->>MT: Generate code samples
     MT->>SA: Submit for analysis
@@ -420,7 +420,7 @@ const Button = ({ onClick, children, disabled = false }) => (
 const LoginForm = () => {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
-  
+
   const validateAndSubmit = (e) => {
     e.preventDefault();
     const validationErrors = validateCredentials(credentials);
@@ -430,7 +430,7 @@ const LoginForm = () => {
       setErrors(validationErrors);
     }
   };
-  
+
   return (
     <form onSubmit={validateAndSubmit}>
       {/* Form fields with error handling */}
@@ -446,17 +446,17 @@ const LoginForm = () => {
 const DataTable = memo(({ data, columns, onSort, onFilter }) => {
   const [sortConfig, setSortConfig] = useState(null);
   const [filterState, setFilterState] = useState({});
-  
+
   const processedData = useMemo(() => {
     return applyFiltersAndSort(data, filterState, sortConfig);
   }, [data, filterState, sortConfig]);
-  
+
   const virtualizer = useVirtual({
     size: processedData.length,
     parentRef: tableRef,
     estimateSize: useCallback(() => 50, [])
   });
-  
+
   return (
     <VirtualizedTable>
       {/* Complex table implementation */}
@@ -494,11 +494,11 @@ def analyze_semantic_similarity(golden_code, generated_code):
     # Tokenize and parse both code samples
     golden_ast = parse_to_ast(golden_code)
     generated_ast = parse_to_ast(generated_code)
-    
+
     # Compute embeddings using fine-tuned CodeBERT
     golden_embedding = code_encoder.encode(golden_code)
     generated_embedding = code_encoder.encode(generated_code)
-    
+
     # Multi-dimensional similarity calculation
     return {
         'syntax_similarity': compute_syntax_similarity(golden_ast, generated_ast),
@@ -518,7 +518,7 @@ def generate_model_insights(evaluation_results):
         'weakness_patterns': identify_common_failures(evaluation_results),
         'improvement_suggestions': generate_recommendations(evaluation_results)
     }
-    
+
     return ModelEvaluationReport(insights)
 ```
 
@@ -690,13 +690,13 @@ class RiskMonitor:
             'performance_drift': self.detect_model_performance_changes(),
             'system_health': self.check_infrastructure_status()
         }
-        
+
         if metrics['human_correlation'] < ACCEPTABLE_CORRELATION_THRESHOLD:
             self.alert_quality_degradation()
-        
+
         if metrics['result_stability'] > STABILITY_VARIANCE_LIMIT:
             self.recalibrate_similarity_engine()
-        
+
         return metrics
 ```
 
@@ -882,7 +882,7 @@ Think of it like this: You own a restaurant and need to hire a new chef. You cou
 
 **The Old Way (What Most Companies Do Now):**
 - Interview 3 chefs quickly
-- Have them cook 2-3 simple dishes  
+- Have them cook 2-3 simple dishes
 - Make a gut decision based on limited information
 - Hope for the best
 
@@ -1011,7 +1011,7 @@ def find_duplicates(cart):
 
 **Our System's Analysis:**
 - **Model A:** Functional but inefficient (slow with large carts)
-- **Model B:** Simple but very inefficient (checks every item multiple times)  
+- **Model B:** Simple but very inefficient (checks every item multiple times)
 - **Model C:** Efficient and clean (uses proper data structures)
 
 **The Decision:** Model C wins because it's not just correct, but also efficient and professional.
