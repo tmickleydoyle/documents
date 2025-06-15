@@ -39,7 +39,7 @@ This document is intended for:
 Before diving into implementation details, it's essential to understand the fundamental principles that guide every decision in the Monstera framework:
 
 ### 1. Entity-Centric Design
-Everything in Monstera revolves around entities (users, accounts, projects, etc.) and their actions. This provides a natural framework for understanding business dynamics.
+Everything in Monstera revolves around entities (users, accounts, teams, etc.) and their actions. This provides a natural framework for understanding business dynamics.
 
 ### 2. Event-Driven Architecture
 All metrics are built from atomic events that represent specific actions taken by entities. This ensures granular tracking and enables both high-level trends and detailed analysis.
