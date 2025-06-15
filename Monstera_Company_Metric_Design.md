@@ -21,7 +21,7 @@ Monstera is a comprehensive framework designed to build a robust ecosystem of me
 Monstera is not just another metrics framework, it's a systematic approach to creating organizational alignment through standardized, reliable, and actionable data. The name "Monstera" reflects the organic, interconnected growth of metrics throughout an organization, much like the sprawling, connected leaves of the Monstera plant.
 
 **Why Monstera Matters**
-In today's data-rich environment, the challenge isn't collecting data—it's creating meaningful, consistent, and actionable insights that drive business decisions. Monstera addresses the fundamental problems that plague most organizations:
+In today's data-rich environment, the challenge isn't collecting data, it's creating meaningful, consistent, and actionable insights that drive business decisions. Monstera addresses the fundamental problems that plague most organizations:
 - Metric drift and inconsistent definitions
 - Fragmented data ownership and accountability
 - Difficulty connecting granular actions to business outcomes
