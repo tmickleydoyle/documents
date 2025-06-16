@@ -193,43 +193,6 @@ Once the data models are in place, the final step is to calculate the metrics th
 
 By joining action and entity tables, metrics become far more versatile and informative. Segmenting metrics based on entity characteristics allows for deeper insights, which is essential for understanding different user behaviors, trends, and key performance drivers across various segments of the business. This step is a critical part of transforming raw data into actionable insights that drive more granular and targeted decision-making.
 
-### Implementation: Turning Philosophy into Action
-
-Successfully implementing the Monstera framework requires careful planning and execution. The following sections outline the key steps and considerations for bringing the Monstera framework to life within an organization.
-
-**1. Surveying the Data Landscape**
-Before any technical implementation, it's crucial to understand the current state of data within the organization. This includes identifying existing data sources, understanding how data flows between systems, and recognizing any immediate gaps or issues. Engage with stakeholders across the organization to gather information about current metrics, reporting tools, and pain points.
-
-**2. Designing Event Trees and Metrics**
-With a clear understanding of the data landscape, the next step is to design the event trees that will form the basis of the metrics. Event trees map out the relationships and hierarchies of events and metrics, providing a structured approach to metric development.
-
-- **Create a hierarchy of events**: Define the top-level events that represent major user actions, and identify the sub-events that occur within each top-level event.
-- **Define standard metrics for each workflow**: Develop metrics that measure the performance of each key event, focusing on user engagement, retention, and other critical business outcomes.
-- **Iterative approach to metric creation**: Start with the most critical workflows and metrics, and iteratively expand to cover additional areas as needed.
-
-**3. Building Standardized Data Models**
-Standardized data models are essential for ensuring consistency and reliability in metric calculations. These models define how data is stored, accessed, and transformed within the organization's data infrastructure.
-
-- **Create action-focused tables**: Centralize all actions or activities that entities perform into "action tables," consolidating data from various sources while maintaining a focus on specific activities.
-
-- **Entity vs. activity tables**: Create two types of tables to maintain clarity and separation of concerns:
-  - **Activity/action tables**: Capture all interactions and activities performed by entities in a structured and chronological manner. Transactional data preferred.
-  - **Entity tables**: Store the descriptive data related to entities themselves, allowing for easy enrichment of the action tables when performing analysis. CDC or similar tables structure preferred.
-
-**4. Building Metrics Values**
-The calculation of metrics is a critical step in the implementation process. Metrics should be calculated in a way that ensures accuracy, consistency, and reliability.
-
-- **Enriching action data with entity data**: Join the action tables back with the entity tables to segment the overall metrics into more granular metrics based on key attributes of the entities.
-  - **Frequency by country**: Segment actions by location to analyze regional performance trends.
-  - **Metrics by account age**: Offer insights into engagement or retention by segmenting metrics based on how long a user has had an account.
-  - **Other demographic or entity-based segments**: Apply further segmentation based on available attributes in the entity tables.
-
-- **Cube-based approach**: Consider structuring the data into a multi-dimensional cube, allowing for dynamic calculations at query time. This approach offers flexibility but may require significant computational resources.
-
-- **Pre-computed metrics**: In cases where performance is a concern, pre-aggregate and store metrics in summary tables for faster queries. Ensure that action data is correctly enriched with entity data to enable segmented views of the metrics.
-
-- **Hybrid approaches**: Depending on the specific needs and technical infrastructure, a combination of cube-based and pre-computed metrics can be used.
-
 **5. Establishing Data Quality Standards**
 
 Data quality is non-negotiable in the Monstera framework. Without reliable data, even the best-designed metrics become meaningless. Implement these quality standards:
