@@ -1,14 +1,4 @@
 # AI Agent Model Evaluation Framework
-## Production-Grade Semantic Assessment for Code Generation Systems
-
-> **A comprehensive framework for evaluating AI models in agentic code generation workflows using semantic similarity analysis - designed for teams building production AI systems**
-
-**Author:** [@tmickleydoyle](https://github.com/tmickleydoyle)
-**Published:** June 2025
-**Version:** 0.1
-**Framework Type:** Production AI Infrastructure
-
----
 
 ## Table of Contents
 
@@ -25,8 +15,6 @@
 - [Key Takeaways](#key-takeaways)
 - [Conclusion](#conclusion)
 - [Simple Explanation: Understanding This AI System (For Everyone)](#simple-explanation-understanding-this-ai-system-for-everyone)
-
----
 
 ## Executive Summary
 
