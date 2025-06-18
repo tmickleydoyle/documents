@@ -18,7 +18,7 @@
 
 ## Executive Summary
 
-### The Big Picture: What This Framework Achieves
+### What This Framework Achieves
 Imagine you're running a company that builds AI-powered coding assistants. Every month, new AI models emerge claiming to be "better" at generating code. But how do you actually know which one to use? This framework solves that exact problem by creating an automated, objective way to test and compare AI coding models.
 
 **The Problem:** Companies building AI coding tools currently spend weeks manually testing each new model with small sample sizes. This process is slow, subjective, and often leads to poor model choices that hurt product quality.
