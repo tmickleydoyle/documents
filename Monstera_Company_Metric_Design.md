@@ -45,7 +45,7 @@ Everything in Monstera revolves around entities (users, accounts, projects, etc.
 All metrics are built from atomic events that represent specific actions taken by entities. This ensures granular tracking and enables both high-level trends and detailed analysis.
 
 ### 3. Hierarchical Structure
-Metrics follow a tree structure that allows seamless movement between different levels of detail—from company-wide KPIs to individual user actions.
+Metrics follow a tree structure that allows seamless movement between different levels of detail, from company-wide KPIs to individual user actions.
 
 ### 4. Ownership and Accountability
 Every metric, event, and dashboard has a clear owner responsible for its accuracy, maintenance, and business logic.
@@ -57,9 +57,9 @@ The framework prioritizes enabling teams to find and use data independently, red
 It's better to have fewer, high-quality, well-understood metrics than many inconsistent or poorly defined ones.
 
 ### Metrics as the Cornerstone of Decision-Making
-Metrics are the foundation upon which informed decision-making is built. For metrics to be a reliable asset in any organization, they must be developed in a stable and trustworthy manner. Inconsistent or loosely defined metrics can undermine confidence at every level—from senior leadership down to the individuals responsible for creating events and maintaining business logic. A lack of standardized and robust metrics not only leads to unreliable forecasting but also hinders the ability to set and achieve meaningful monthly or quarterly goals.
+Metrics are the foundation upon which informed decision-making is built. For metrics to be a reliable asset in any organization, they must be developed in a stable and trustworthy manner. Inconsistent or loosely defined metrics can undermine confidence at every level, from senior leadership down to the individuals responsible for creating events and maintaining business logic. A lack of standardized and robust metrics not only leads to unreliable forecasting but also hinders the ability to set and achieve meaningful monthly or quarterly goals.
 
-One of the key challenges that organizations face when developing metrics is “metric drift”—the slow evolution of metric definitions as different teams interpret business logic in various ways. Without centralized definitions, teams may inadvertently deviate from the original intent of a metric, resulting in inconsistent data that lacks clarity and alignment. This fragmentation makes it difficult to identify the “golden data”—the most valuable, standardized data that drives key decisions around adoption, retention, and performance improvement. Establishing and maintaining a rigorous, standardized approach to metric development is essential for avoiding this drift.
+One of the key challenges that organizations face when developing metrics is “metric drift”, the slow evolution of metric definitions as different teams interpret business logic in various ways. Without centralized definitions, teams may inadvertently deviate from the original intent of a metric, resulting in inconsistent data that lacks clarity and alignment. This fragmentation makes it difficult to identify the “golden data”, the most valuable, standardized data that drives key decisions around adoption, retention, and performance improvement. Establishing and maintaining a rigorous, standardized approach to metric development is essential for avoiding this drift.
 
 Once metrics are standardized, they enhance the company's ability to perform ad hoc analysis with greater efficiency and accuracy. Clean, well-defined data allows for the identification of patterns and trends, enabling stakeholders across the company to make faster, more informed decisions. Self-service analytics becomes significantly easier as the data takes on a consistent shape, with clear definitions, lineage, and documentation that reduce the barriers to independent exploration. Teams can dive into the data without the need for constant guidance from the data team, fostering a more data-driven culture across the organization.
 
@@ -362,7 +362,7 @@ Monstera metrics must comply with privacy regulations and company security polic
 
 ## Dashboard Design: Structuring Metrics for Actionable Insights
 
-A well-designed dashboard is essential for conveying metrics in a clear and actionable way. The goal of the Monstera dashboard design is to provide a structured, intuitive view of the company's key metrics while maintaining consistency and clarity across all dashboards. To achieve this, dashboards will follow a **tree structure**, with **three types of dashboards**—Overall View, Segment View, and Activity View—each rolling up into the next. This approach ensures users can easily navigate from detailed activity metrics all the way up to high-level company performance, without losing context.
+A well-designed dashboard is essential for conveying metrics in a clear and actionable way. The goal of the Monstera dashboard design is to provide a structured, intuitive view of the company's key metrics while maintaining consistency and clarity across all dashboards. To achieve this, dashboards will follow a **tree structure**, with **three types of dashboards**, Overall View, Segment View, and Activity View, each rolling up into the next. This approach ensures users can easily navigate from detailed activity metrics all the way up to high-level company performance, without losing context.
 
 **1. Dashboard Types and Tree Structure**
 The three dashboard types follow a hierarchical structure, allowing users to zoom in and out based on their level of analysis.
