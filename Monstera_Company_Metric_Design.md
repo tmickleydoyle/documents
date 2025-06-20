@@ -380,6 +380,39 @@ To maintain clarity and consistency, all dashboards will adhere to a **standard 
 - "New Videos, Weekly Active, Last 90 Days by Status" (Activity View)
 - "New Videos, Weekly Active, Last 90 Days" (Overall View)
 
+- **Metric Naming Conventions**:
+  To ensure consistency across all metrics in the Monstera framework, follow these standardized naming patterns:
+
+  **Standard Metric Naming Format:**
+  ```
+  [Entity Type] [Action/State] [Time Period] [Qualifier] (if applicable)
+  ```
+
+  **Components:**
+  - **Entity Type**: The subject being measured (Users, Videos, Accounts, Sessions)
+  - **Action/State**: What is being counted or measured (Active, Created, Updated, Deleted, Logged In)
+  - **Time Period**: The temporal scope (Daily, Weekly, Monthly, All-Time)
+  - **Qualifier**: Additional context when needed (New, Returning, by Country, by Feature)
+
+  **Examples:**
+  - "Users Active Monthly" (monthly active users)
+  - "Videos Created Daily" (daily video creation count)
+  - "Accounts Created Monthly New" (new accounts created per month)
+  - "Sessions Daily Average Duration" (average daily session length)
+  - "Users Active Weekly by Country" (weekly active users segmented by country)
+
+  **Naming Best Practices:**
+  - Use title case for all metric names
+  - Avoid abbreviations unless universally understood (MAU for Monthly Active Users)
+  - Be specific but concise - prefer "Users Logged In Daily" over "Daily Login Events"
+  - Use consistent terminology across similar metrics
+  - Include units when measuring quantities (Duration in Minutes, Size in MB)
+
+  **Prohibited Patterns:**
+  - Ambiguous time references: "Recent Users" instead of "Users Active Weekly"
+  - Technical jargon: "User Engagement Events" instead of "Users Active"
+  - Inconsistent entity naming: Mix of "User" and "Customer" for same entity type
+
 **3. Dashboard Layout and Navigation Standards**
 
 Every dashboard must follow this standardized layout:
