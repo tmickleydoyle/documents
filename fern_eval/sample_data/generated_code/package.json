@@ -1,9 +1,26 @@
 {
-  "name": "generated-nextjs-app",
+  "name": "ai-generated-task-app",
   "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
   "dependencies": {
-    "next": "13.4.0",
+    "next": "14.0.0",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "@mui/material": "5.14.0",
+    "@emotion/react": "11.11.0",
+    "@emotion/styled": "11.11.0",
+    "recharts": "2.8.0",
+    "moment": "2.29.0",
+    "lodash": "4.17.21"
+  },
+  "devDependencies": {
+    "@types/node": "20.5.0",
+    "@types/react": "18.2.0",
+    "typescript": "5.1.0"
   }
 }
