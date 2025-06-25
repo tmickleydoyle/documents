@@ -307,30 +307,3 @@ except Exception as e:
     print(f"Framework error: {e}")
 ```
 
-## 🤝 Contributing
-
-We welcome contributions! Please see our contributing guidelines:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes and add tests
-4. Ensure all tests pass (`python -m pytest`)
-5. Commit your changes (`git commit -m 'Add amazing feature'`)
-6. Push to the branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
-
-### Development Setup
-
-```bash
-# Install development dependencies
-pip install -r dev-requirements.txt
-
-# Install pre-commit hooks
-pre-commit install
-
-# Run code quality checks
-flake8 src/
-black src/
-mypy src/
-```
-
