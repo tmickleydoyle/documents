@@ -41,9 +41,7 @@ A comprehensive, scientifically rigorous framework for evaluating AI-generated c
 ### Installation
 
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd fern_nextjs_eval
+cd fern_eval
 
 # Create virtual environment
 python -m venv venv
@@ -336,42 +334,3 @@ black src/
 mypy src/
 ```
 
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **Hugging Face** for transformer models and infrastructure
-- **Sentence Transformers** for semantic embeddings
-- **CodeBERT** for code understanding capabilities
-- The open-source community for inspiring this work
-
-## 📚 Citation
-
-If you use this framework in your research or products, please cite:
-
-```bibtex
-@software{universal_code_evaluator,
-  title={Universal Code Evaluation Framework: Semantic Similarity Analysis for AI-Generated Code},
-  author={Your Name},
-  year={2025},
-  url={https://github.com/your-org/fern_nextjs_eval}
-}
-```
-
-## 🔗 Related Work
-
-- [CodeBERT: A Pre-Trained Model for Programming and Natural Languages](https://arxiv.org/abs/2002.08155)
-- [Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks](https://arxiv.org/abs/1908.10084)
-- [Evaluating Large Language Models Trained on Code](https://arxiv.org/abs/2107.03374)
-
-## 📞 Support
-
-- **Issues**: Please use GitHub Issues for bug reports and feature requests
-- **Discussions**: Join our GitHub Discussions for questions and community support
-- **Documentation**: Full API documentation available in the `/docs` directory
-
----
-
-**Transform your AI model evaluation from guesswork to data science.** 🚀
