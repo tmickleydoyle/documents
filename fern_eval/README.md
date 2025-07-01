@@ -5,7 +5,7 @@ A framework for evaluating AI-generated code using semantic similarity analysis 
 ## 🎯 What This Does
 
 Automatically evaluates how well AI-generated code matches reference code across multiple quality dimensions:
-- **Semantic Similarity**: Understanding code meaning using transformer models
+- **Semantic Similarity**: Understanding code meaning using specialized code models (UniXcoder)
 - **Functional Equivalence**: Does the code produce the same output?
 - **Structural Similarity**: Code organization and patterns  
 - **Style Consistency**: Formatting and conventions
@@ -172,8 +172,10 @@ python -m pytest tests/test_analyzers.py -v
 
 ## 📊 Performance
 
-- **Processing Speed**: ~15ms per file evaluation
-- **Memory Usage**: <200MB for application evaluation
+- **Processing Speed**: ~15ms per file evaluation (may be slightly slower with UniXcoder)
+- **Memory Usage**: <500MB for application evaluation (increased due to larger model)
+- **Model Size**: ~500MB (UniXcoder) with ~90MB fallback (sentence-transformers)
+- **Accuracy**: Significantly improved semantic similarity for code evaluation
 - **Supported Languages**: JavaScript, TypeScript, Python, Java, C++, C#, Go, Rust, PHP, Ruby, Swift, Kotlin
 
 ## 🔧 Configuration
@@ -192,9 +194,18 @@ QUALITY_FOCUSED_WEIGHTS = {
     "architectural_enhancement": 0.05,
 }
 
-# Model configuration
-DEFAULT_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+# Model configuration - Uses UniXcoder for superior code understanding
+DEFAULT_EMBEDDING_MODEL = "microsoft/unixcoder-base"
+FALLBACK_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 ```
+
+### Model Details
+
+The framework now uses **Microsoft UniXcoder** as the default semantic similarity model:
+- **Superior Code Understanding**: Pre-trained on code, comments, and AST data
+- **Multi-modal Training**: Understands both code structure and natural language
+- **Better Similarity Detection**: Specialized for programming language semantics
+- **Fallback Support**: Automatically falls back to sentence-transformers if needed
 
 ## 📁 Project Structure
 

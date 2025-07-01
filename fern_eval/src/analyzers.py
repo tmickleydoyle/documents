@@ -11,7 +11,6 @@ from typing import Dict, List, Optional
 
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-
 from .cache import get_embedding_cache
 
 from .config import (
@@ -52,38 +51,54 @@ class SemanticSimilarityAnalyzer:
         """
         self.model_name = model_name
         self.model = None
-        self.cache = get_embedding_cache()
+        self.tokenizer = None
+        self.model_type = "unknown"
         self._load_model()
 
     def _load_model(self) -> None:
-        """Load the transformer model for embeddings with lazy loading."""
-        # Model will be loaded on first use to save memory
-        pass
-
-    def _ensure_model_loaded(self) -> bool:
-        """Ensure the model is loaded, loading it if necessary."""
-        if self.model is not None:
-            return True
-
+        """Load the transformer model for embeddings."""
+        try:
+            if "unixcoder" in self.model_name.lower():
+                # Use UniXcoder for code-specific embeddings
+                from transformers import AutoTokenizer, AutoModel
+                import torch
+                
+                self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+                self.model = AutoModel.from_pretrained(self.model_name)
+                self.model_type = "unixcoder"
+                logger.info(f"Successfully loaded UniXcoder model: {self.model_name}")
+            else:
+                # Use sentence-transformers for general embeddings
+                from sentence_transformers import SentenceTransformer
+                
+                self.model = SentenceTransformer(self.model_name)
+                self.model_type = "sentence_transformer"
+                logger.info(f"Successfully loaded SentenceTransformer model: {self.model_name}")
+                
+        except ImportError as e:
+            logger.warning(f"Required library not available: {e}. Using fallback.")
+            self._load_fallback_model()
+        except Exception as e:
+            logger.warning(f"Failed to load {self.model_name}: {e}. Using fallback.")
+            self._load_fallback_model()
+    
+    def _load_fallback_model(self) -> None:
+        """Load fallback model when primary model fails."""
         try:
             from sentence_transformers import SentenceTransformer
-
-            logger.info(f"Loading model: {self.model_name}")
-            self.model = SentenceTransformer(self.model_name)
-            logger.info(f"Successfully loaded model: {self.model_name}")
-            return True
-        except ImportError:
-            logger.warning("sentence-transformers not available, using fallback")
-            self.model = None
-            return False
+            from .config import FALLBACK_EMBEDDING_MODEL
+            
+            self.model = SentenceTransformer(FALLBACK_EMBEDDING_MODEL)
+            self.model_type = "sentence_transformer"
+            logger.info(f"Loaded fallback model: {FALLBACK_EMBEDDING_MODEL}")
         except Exception as e:
-            logger.warning(f"Failed to load {self.model_name}: {e}")
+            logger.warning(f"Fallback model also failed: {e}. Using random embeddings.")
             self.model = None
-            return False
+            self.model_type = "random"
 
     def compute_embeddings(self, code_samples: List[str]) -> np.ndarray:
         """
-        Compute embeddings for code samples with caching.
+        Compute embeddings for code samples.
 
         Args:
             code_samples: List of code strings
@@ -91,37 +106,61 @@ class SemanticSimilarityAnalyzer:
         Returns:
             NumPy array of embeddings
         """
-        if not self._ensure_model_loaded():
+        if self.model is None:
             # Fallback to random embeddings for testing
             logger.warning("Using random embeddings (model not available)")
-            return np.random.rand(len(code_samples), 384)
+            return np.random.rand(len(code_samples), 768)
 
-        embeddings = []
-        cache_hits = 0
-
-        for code in code_samples:
-            # Check cache first
-            cached_embedding = self.cache.get(code, self.model_name)
-            if cached_embedding is not None:
-                embeddings.append(cached_embedding)
-                cache_hits += 1
+        try:
+            if self.model_type == "unixcoder":
+                return self._compute_unixcoder_embeddings(code_samples)
+            elif self.model_type == "sentence_transformer":
+                return self._compute_sentence_transformer_embeddings(code_samples)
             else:
-                # Compute and cache embedding
-                try:
-                    processed_code = preprocess_code_for_analysis(code)
-                    embedding = self.model.encode([processed_code])[0]
-                    embeddings.append(embedding)
-                    self.cache.put(code, self.model_name, embedding)
-                except Exception as e:
-                    logger.error(f"Failed to compute embedding: {e}")
-                    # Use random embedding as fallback
-                    embedding = np.random.rand(384)
-                    embeddings.append(embedding)
-
-        if cache_hits > 0:
-            logger.debug(f"Cache hits: {cache_hits}/{len(code_samples)} embeddings")
-
+                logger.warning("Unknown model type, using random embeddings")
+                return np.random.rand(len(code_samples), 768)
+                
+        except Exception as e:
+            logger.error(f"Failed to compute embeddings: {e}")
+            # Return random embeddings as fallback
+            return np.random.rand(len(code_samples), 768)
+    
+    def _compute_unixcoder_embeddings(self, code_samples: List[str]) -> np.ndarray:
+        """Compute embeddings using UniXcoder model."""
+        import torch
+        
+        embeddings = []
+        for code in code_samples:
+            # Preprocess code for better embeddings
+            processed_code = preprocess_code_for_analysis(code)
+            
+            # Tokenize for UniXcoder (encoder-only mode)
+            inputs = self.tokenizer(
+                processed_code,
+                max_length=512,
+                truncation=True,
+                padding=True,
+                return_tensors="pt"
+            )
+            
+            # Get embeddings
+            with torch.no_grad():
+                outputs = self.model(**inputs)
+                # Use mean pooling of last hidden states
+                embedding = outputs.last_hidden_state.mean(dim=1).squeeze().numpy()
+                embeddings.append(embedding)
+        
         return np.array(embeddings)
+    
+    def _compute_sentence_transformer_embeddings(self, code_samples: List[str]) -> np.ndarray:
+        """Compute embeddings using SentenceTransformer model."""
+        # Preprocess code for better embeddings
+        processed_samples = [
+            preprocess_code_for_analysis(code) for code in code_samples
+        ]
+        embeddings = self.model.encode(processed_samples)
+        logger.debug(f"Computed embeddings for {len(code_samples)} samples")
+        return embeddings
 
     def compute_similarity(self, code1: str, code2: str) -> float:
         """
@@ -216,16 +255,16 @@ class QualityAnalyzer:
             Structural similarity score (0-1)
         """
         try:
+            # If files are identical, return perfect similarity
+            if golden.strip() == generated.strip():
+                return 1.0
+            
             # Compare import statements
             golden_imports = set(extract_imports(golden))
             generated_imports = set(extract_imports(generated))
 
-            # Fix: Handle cases where both have no imports (should be 1.0, not 0.0)
-            if not golden_imports and not generated_imports:
-                import_similarity = 1.0
-            elif not golden_imports:
-                import_similarity = 0.0
-            else:
+            import_similarity = 1.0  # Default to 1.0 if no imports
+            if golden_imports:
                 common_imports = golden_imports & generated_imports
                 import_similarity = len(common_imports) / len(golden_imports)
 
@@ -233,12 +272,8 @@ class QualityAnalyzer:
             golden_jsx = set(extract_jsx_elements(golden))
             generated_jsx = set(extract_jsx_elements(generated))
 
-            # Fix: Handle cases where both have no JSX (should be 1.0, not 0.0)
-            if not golden_jsx and not generated_jsx:
-                jsx_similarity = 1.0
-            elif not golden_jsx:
-                jsx_similarity = 0.0
-            else:
+            jsx_similarity = 1.0  # Default to 1.0 if no JSX
+            if golden_jsx:
                 common_jsx = golden_jsx & generated_jsx
                 jsx_similarity = len(common_jsx) / len(golden_jsx)
 
@@ -246,12 +281,8 @@ class QualityAnalyzer:
             golden_hooks = set(extract_hooks(golden))
             generated_hooks = set(extract_hooks(generated))
 
-            # Fix: Handle cases where both have no hooks (should be 1.0, not 0.0)
-            if not golden_hooks and not generated_hooks:
-                hooks_similarity = 1.0
-            elif not golden_hooks:
-                hooks_similarity = 0.0
-            else:
+            hooks_similarity = 1.0  # Default to 1.0 if no hooks
+            if golden_hooks:
                 common_hooks = golden_hooks & generated_hooks
                 hooks_similarity = len(common_hooks) / len(golden_hooks)
 
@@ -363,6 +394,10 @@ class QualityAnalyzer:
             Performance impact score (0-1, higher is better)
         """
         try:
+            # If files are identical, performance impact is perfect
+            if golden.strip() == generated.strip():
+                return 1.0
+            
             antipatterns = 0
 
             # Check for missing keys in map operations
@@ -430,6 +465,43 @@ class QualityAnalyzer:
             logger.error(f"Error assessing maintainability: {e}")
             return 0.0
 
+    def assess_maintainability_similarity(self, golden: str, generated: str) -> float:
+        """
+        Assess maintainability similarity between golden and generated code.
+
+        Args:
+            golden: Golden standard code
+            generated: Generated code
+
+        Returns:
+            Maintainability similarity score (0-1)
+        """
+        try:
+            # If files are identical, maintainability similarity is perfect
+            if golden.strip() == generated.strip():
+                return 1.0
+            
+            golden_score = self.assess_maintainability(golden)
+            generated_score = self.assess_maintainability(generated)
+            
+            # Calculate similarity based on the difference in scores
+            if golden_score == generated_score:
+                return 1.0
+            
+            if golden_score == 0 and generated_score == 0:
+                return 1.0
+            
+            max_score = max(golden_score, generated_score)
+            min_score = min(golden_score, generated_score)
+            
+            if max_score == 0:
+                return 1.0
+            
+            return min_score / max_score
+        except Exception as e:
+            logger.error(f"Error assessing maintainability similarity: {e}")
+            return 0.0
+
     def assess_accessibility(self, code: str) -> float:
         """
         Assess accessibility considerations in code.
@@ -481,39 +553,43 @@ class QualityAnalyzer:
         except Exception as e:
             logger.error(f"Error assessing accessibility: {e}")
             return 0.0
-    
-    def compare_accessibility(self, golden: str, generated: str) -> float:
+
+    def assess_accessibility_similarity(self, golden: str, generated: str) -> float:
         """
-        Compare accessibility between golden and generated code.
-        
+        Assess accessibility similarity between golden and generated code.
+
         Args:
             golden: Golden standard code
             generated: Generated code
-            
+
         Returns:
             Accessibility similarity score (0-1)
         """
         try:
-            # If both codes are identical, return perfect score
-            if golden == generated:
+            # If files are identical, accessibility similarity is perfect
+            if golden.strip() == generated.strip():
                 return 1.0
-                
+            
             golden_score = self.assess_accessibility(golden)
             generated_score = self.assess_accessibility(generated)
             
-            # If both have the same accessibility level, consider them equivalent
+            # If both have the same accessibility score, they're similar
             if golden_score == generated_score:
                 return 1.0
             
-            # If golden has no accessibility features, any accessibility in generated is good
-            if golden_score == 0:
-                return min(1.0, generated_score + 0.5)  # Bonus for adding accessibility
+            # Calculate similarity based on the difference in scores
+            if golden_score == 0 and generated_score == 0:
+                return 1.0  # Both have no accessibility features
             
-            # Calculate similarity based on how close the generated score is to golden
-            return 1.0 - abs(golden_score - generated_score)
+            max_score = max(golden_score, generated_score)
+            min_score = min(golden_score, generated_score)
             
+            if max_score == 0:
+                return 1.0
+            
+            return min_score / max_score
         except Exception as e:
-            logger.error(f"Error comparing accessibility: {e}")
+            logger.error(f"Error assessing accessibility similarity: {e}")
             return 0.0
 
     def assess_security(self, code: str) -> float:
@@ -552,76 +628,41 @@ class QualityAnalyzer:
             logger.error(f"Error assessing security: {e}")
             return 0.5
 
-    def analyze_architectural_enhancement(self, golden: str, generated: str) -> float:
+    def assess_security_similarity(self, golden: str, generated: str) -> float:
         """
-        Analyze architectural enhancements in generated code compared to golden.
-        
-        This rewards sophisticated improvements like error handling, performance
-        optimizations, better state management, comprehensive testing, etc.
-        
+        Assess security similarity between golden and generated code.
+
         Args:
             golden: Golden standard code
             generated: Generated code
-            
+
         Returns:
-            Architectural enhancement score (0-1)
+            Security similarity score (0-1)
         """
         try:
-            enhancement_score = 0.0
-            total_possible = 0.0
+            # If files are identical, security similarity is perfect
+            if golden.strip() == generated.strip():
+                return 1.0
             
-            # Error handling enhancements
-            golden_error_handling = len(re.findall(r'try\s*{|catch\s*\(|\.catch\(|error|Error', golden))
-            generated_error_handling = len(re.findall(r'try\s*{|catch\s*\(|\.catch\(|error|Error', generated))
-            if generated_error_handling > golden_error_handling:
-                enhancement_score += 0.2
-            total_possible += 0.2
+            golden_score = self.assess_security(golden)
+            generated_score = self.assess_security(generated)
             
-            # Performance optimizations (memoization, callbacks)
-            golden_perf = len(re.findall(r'useCallback|useMemo|React\.memo|React\.forwardRef', golden))
-            generated_perf = len(re.findall(r'useCallback|useMemo|React\.memo|React\.forwardRef', generated))
-            if generated_perf > golden_perf:
-                enhancement_score += 0.2
-            total_possible += 0.2
+            # Calculate similarity based on the difference in scores
+            if golden_score == generated_score:
+                return 1.0
             
-            # Advanced state management (middleware, persistence)
-            golden_state = len(re.findall(r'persist|devtools|immer|middleware', golden))
-            generated_state = len(re.findall(r'persist|devtools|immer|middleware', generated))
-            if generated_state > golden_state:
-                enhancement_score += 0.15
-            total_possible += 0.15
+            if golden_score == 0 and generated_score == 0:
+                return 1.0
             
-            # Testing enhancements
-            golden_tests = len(re.findall(r'test\(|it\(|describe\(|expect\(', golden))
-            generated_tests = len(re.findall(r'test\(|it\(|describe\(|expect\(', generated))
-            if generated_tests > golden_tests * 1.5:  # Significantly more tests
-                enhancement_score += 0.15
-            total_possible += 0.15
+            max_score = max(golden_score, generated_score)
+            min_score = min(golden_score, generated_score)
             
-            # Type safety improvements
-            golden_types = len(re.findall(r'interface|type\s+\w+|:\s*\w+\[\]|:\s*string|:\s*number', golden))
-            generated_types = len(re.findall(r'interface|type\s+\w+|:\s*\w+\[\]|:\s*string|:\s*number', generated))
-            if generated_types > golden_types:
-                enhancement_score += 0.1
-            total_possible += 0.1
+            if max_score == 0:
+                return 1.0
             
-            # Accessibility improvements  
-            golden_a11y = len(re.findall(r'aria-|alt=|role=|tabIndex|onKeyDown', golden))
-            generated_a11y = len(re.findall(r'aria-|alt=|role=|tabIndex|onKeyDown', generated))
-            if generated_a11y > golden_a11y:
-                enhancement_score += 0.1
-            total_possible += 0.1
-            
-            # Loading states and skeleton UI
-            if ('loading' in generated.lower() or 'skeleton' in generated.lower()) and \
-               ('loading' not in golden.lower() and 'skeleton' not in golden.lower()):
-                enhancement_score += 0.1
-            total_possible += 0.1
-            
-            return enhancement_score / total_possible if total_possible > 0 else 0.0
-            
+            return min_score / max_score
         except Exception as e:
-            logger.error(f"Error analyzing architectural enhancement: {e}")
+            logger.error(f"Error assessing security similarity: {e}")
             return 0.0
 
     def analyze_structure(self, code1: str, code2: str) -> float:
@@ -706,14 +747,13 @@ class ComprehensiveEvaluator:
             performance_impact = self.quality_analyzer.estimate_performance_impact(
                 golden_code, generated_code
             )
-            maintainability_score = self.quality_analyzer.assess_maintainability(
-                generated_code
-            )
-            accessibility_score = self.quality_analyzer.compare_accessibility(
+            maintainability_score = self.quality_analyzer.assess_maintainability_similarity(
                 golden_code, generated_code
             )
-            security_score = self.quality_analyzer.assess_security(generated_code)
-            architectural_enhancement_score = self.quality_analyzer.analyze_architectural_enhancement(
+            accessibility_score = self.quality_analyzer.assess_accessibility_similarity(
+                golden_code, generated_code
+            )
+            security_score = self.quality_analyzer.assess_security_similarity(
                 golden_code, generated_code
             )
 
@@ -725,13 +765,11 @@ class ComprehensiveEvaluator:
                 + self.weights.get("style", 0) * style_consistency
                 + self.weights.get("maintainability", 0) * maintainability_score
                 + self.weights.get("accessibility", 0) * accessibility_score
-                + self.weights.get("architectural_enhancement", 0) * architectural_enhancement_score
             )
 
             # Detailed analysis
             detailed_analysis = {
                 "semantic_similarity": float(semantic_similarity),
-                "architectural_enhancement_score": float(architectural_enhancement_score),
                 "code_length_ratio": safe_divide(
                     len(generated_code), len(golden_code), 1.0
                 ),
@@ -755,7 +793,6 @@ class ComprehensiveEvaluator:
                 maintainability_score=clamp(maintainability_score),
                 accessibility_score=clamp(accessibility_score),
                 security_score=clamp(security_score),
-                architectural_enhancement_score=clamp(architectural_enhancement_score),
                 detailed_analysis=detailed_analysis,
             )
 
