@@ -7,6 +7,8 @@ matching.
 """
 
 import logging
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
@@ -23,6 +25,7 @@ from .models import (
 )
 from .universal_parser import UniversalParser
 from .utils import safe_divide, setup_logging
+# from .monitoring import monitor_evaluation, record_evaluation_metrics  # TODO: Add monitoring integration
 
 # Backward compatibility alias for tests
 IntelligentFileMatching = IntelligentFileMatcher
@@ -102,15 +105,17 @@ class UniversalCodeEvaluator:
         golden_path: str,
         model_outputs: Union[Dict[str, str], List[str]],
         evaluation_type: str = "auto",
+        max_workers: Optional[int] = None,
     ) -> BatchEvaluationResult:
         """
-        Evaluate multiple models against the same golden standard.
+        Evaluate multiple models against the same golden standard with parallel processing.
 
         Args:
             golden_path: Path to the golden standard
             model_outputs: Dict mapping model names to their output paths, or list
                 of paths
             evaluation_type: Type of evaluation ('file', 'app', or 'auto')
+            max_workers: Maximum number of parallel workers (default: min(4, num_models))
 
         Returns:
             Batch evaluation result with rankings and statistics
@@ -119,11 +124,18 @@ class UniversalCodeEvaluator:
             # Return empty result instead of raising error for test compatibility
             return self._create_batch_result({})
 
-        logger.info(f"Starting batch evaluation of {len(model_outputs)} models")
-
-        model_scores = self._evaluate_all_models(
-            golden_path, model_outputs, evaluation_type
+        logger.info(
+            f"Starting parallel batch evaluation of {len(model_outputs)} models"
         )
+        start_time = time.time()
+
+        model_scores = self._evaluate_all_models_parallel(
+            golden_path, model_outputs, evaluation_type, max_workers
+        )
+
+        elapsed_time = time.time() - start_time
+        logger.info(f"Batch evaluation completed in {elapsed_time:.2f} seconds")
+
         return self._create_batch_result(model_scores)
 
     def generate_report(
@@ -408,7 +420,19 @@ class UniversalCodeEvaluator:
         model_outputs: Union[Dict[str, str], List[str]],
         evaluation_type: str,
     ) -> Dict[str, float]:
-        """Evaluate all models and return their scores."""
+        """Evaluate all models and return their scores (sequential version for backward compatibility)."""
+        return self._evaluate_all_models_parallel(
+            golden_path, model_outputs, evaluation_type, max_workers=1
+        )
+
+    def _evaluate_all_models_parallel(
+        self,
+        golden_path: str,
+        model_outputs: Union[Dict[str, str], List[str]],
+        evaluation_type: str,
+        max_workers: Optional[int] = None,
+    ) -> Dict[str, float]:
+        """Evaluate all models in parallel and return their scores."""
         results = {}
 
         # Handle both list and dict inputs for backward compatibility
@@ -418,20 +442,81 @@ class UniversalCodeEvaluator:
         else:
             model_dict = model_outputs
 
-        for model_name, output_path in model_dict.items():
-            logger.info(f"Evaluating model: {model_name}")
+        # Determine optimal number of workers
+        if max_workers is None:
+            max_workers = min(4, len(model_dict))
 
-            try:
-                result = self.evaluate(golden_path, output_path, evaluation_type)
-                score = self._extract_overall_score(result)
-                results[model_name] = score
+        max_workers = max(1, max_workers)  # Ensure at least 1 worker
 
-            except Exception as e:
-                logger.warning(f"Failed to evaluate model {model_name}: {e}")
-                # Skip failed evaluations rather than setting to 0.0
-                continue
+        if max_workers == 1 or len(model_dict) == 1:
+            # Fall back to sequential processing
+            return self._evaluate_models_sequential(
+                golden_path, model_dict, evaluation_type
+            )
+
+        logger.info(f"Using {max_workers} parallel workers for evaluation")
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # Submit all evaluation tasks
+            future_to_model = {
+                executor.submit(
+                    self._evaluate_single_model,
+                    golden_path,
+                    model_name,
+                    output_path,
+                    evaluation_type,
+                ): model_name
+                for model_name, output_path in model_dict.items()
+            }
+
+            # Collect results as they complete
+            for future in as_completed(future_to_model):
+                model_name = future_to_model[future]
+                try:
+                    score = future.result()
+                    if score is not None:
+                        results[model_name] = score
+                    logger.info(f"Completed evaluation for model: {model_name}")
+                except Exception as e:
+                    logger.warning(f"Failed to evaluate model {model_name}: {e}")
+                    # Skip failed evaluations rather than setting to 0.0
+                    continue
 
         return results
+
+    def _evaluate_models_sequential(
+        self,
+        golden_path: str,
+        model_dict: Dict[str, str],
+        evaluation_type: str,
+    ) -> Dict[str, float]:
+        """Sequential model evaluation for single-threaded fallback."""
+        results = {}
+
+        for model_name, output_path in model_dict.items():
+            logger.info(f"Evaluating model: {model_name}")
+            score = self._evaluate_single_model(
+                golden_path, model_name, output_path, evaluation_type
+            )
+            if score is not None:
+                results[model_name] = score
+
+        return results
+
+    def _evaluate_single_model(
+        self,
+        golden_path: str,
+        model_name: str,
+        output_path: str,
+        evaluation_type: str,
+    ) -> Optional[float]:
+        """Evaluate a single model and return its score."""
+        try:
+            result = self.evaluate(golden_path, output_path, evaluation_type)
+            return self._extract_overall_score(result)
+        except Exception as e:
+            logger.warning(f"Failed to evaluate model {model_name}: {e}")
+            return None
 
     def _extract_overall_score(
         self, result: Union[Dict[str, Any], EvaluationResult]
@@ -621,10 +706,11 @@ class UniversalCodeEvaluator:
             "covered_functionalities": list(covered_functionalities),
             "missing_functionalities": list(missing_functionalities),
             "extra_functionalities": list(extra_functionalities),
-            "functionality_coverage": len(covered_functionalities)
-            / len(golden_functionalities)
-            if golden_functionalities
-            else 1.0,
+            "functionality_coverage": (
+                len(covered_functionalities) / len(golden_functionalities)
+                if golden_functionalities
+                else 1.0
+            ),
         }
 
     def _calculate_directory_similarity(

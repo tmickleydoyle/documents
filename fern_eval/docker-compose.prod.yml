@@ -1,0 +1,137 @@
+version: '3.8'
+
+services:
+  # Main API service
+  fern-eval-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - DB_HOST=postgres
+      - DB_USER=fern_user
+      - DB_PASSWORD=fern_password
+      - DB_NAME=fern_eval
+      - REDIS_URL=redis://redis:6379/0
+      - CACHE_DIR=/app/cache
+      - LOG_LEVEL=INFO
+      - MAX_WORKERS=4
+      - GPU_ACCELERATION=true
+    volumes:
+      - ./cache:/app/cache
+      - ./logs:/app/logs
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Background worker for async tasks
+  fern-eval-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    command: celery -A src.tasks worker --loglevel=info --concurrency=2
+    environment:
+      - ENVIRONMENT=production
+      - DB_HOST=postgres
+      - DB_USER=fern_user
+      - DB_PASSWORD=fern_password
+      - DB_NAME=fern_eval
+      - REDIS_URL=redis://redis:6379/0
+      - CACHE_DIR=/app/cache
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./cache:/app/cache
+      - ./logs:/app/logs
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  # PostgreSQL database
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=fern_eval
+      - POSTGRES_USER=fern_user
+      - POSTGRES_PASSWORD=fern_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fern_user -d fern_eval"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Redis for caching and task queue
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - fern-eval-api
+    restart: unless-stopped
+
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+    restart: unless-stopped
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:10.4.0
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:

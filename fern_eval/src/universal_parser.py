@@ -494,8 +494,10 @@ class UniversalParser:
         """Analyze the directory structure of the application."""
         structure = {}
 
-        for root, dirs, files in app_path.walk():
-            relative_path = root.relative_to(app_path)
+        import os
+        for root, dirs, files in os.walk(app_path):
+            root_path = Path(root)
+            relative_path = root_path.relative_to(app_path)
 
             # Skip hidden and build directories
             dirs[:] = [

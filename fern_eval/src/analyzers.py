@@ -12,6 +12,8 @@ from typing import Dict, List, Optional
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
+from .cache import get_embedding_cache
+
 from .config import (
     DEFAULT_EMBEDDING_MODEL,
     DEFAULT_EVALUATION_WEIGHTS,
@@ -50,25 +52,38 @@ class SemanticSimilarityAnalyzer:
         """
         self.model_name = model_name
         self.model = None
+        self.cache = get_embedding_cache()
         self._load_model()
 
     def _load_model(self) -> None:
-        """Load the transformer model for embeddings."""
+        """Load the transformer model for embeddings with lazy loading."""
+        # Model will be loaded on first use to save memory
+        pass
+
+    def _ensure_model_loaded(self) -> bool:
+        """Ensure the model is loaded, loading it if necessary."""
+        if self.model is not None:
+            return True
+
         try:
             from sentence_transformers import SentenceTransformer
 
+            logger.info(f"Loading model: {self.model_name}")
             self.model = SentenceTransformer(self.model_name)
             logger.info(f"Successfully loaded model: {self.model_name}")
+            return True
         except ImportError:
             logger.warning("sentence-transformers not available, using fallback")
             self.model = None
+            return False
         except Exception as e:
             logger.warning(f"Failed to load {self.model_name}: {e}")
             self.model = None
+            return False
 
     def compute_embeddings(self, code_samples: List[str]) -> np.ndarray:
         """
-        Compute embeddings for code samples.
+        Compute embeddings for code samples with caching.
 
         Args:
             code_samples: List of code strings
@@ -76,23 +91,37 @@ class SemanticSimilarityAnalyzer:
         Returns:
             NumPy array of embeddings
         """
-        if self.model is None:
+        if not self._ensure_model_loaded():
             # Fallback to random embeddings for testing
             logger.warning("Using random embeddings (model not available)")
             return np.random.rand(len(code_samples), 384)
 
-        try:
-            # Preprocess code for better embeddings
-            processed_samples = [
-                preprocess_code_for_analysis(code) for code in code_samples
-            ]
-            embeddings = self.model.encode(processed_samples)
-            logger.debug(f"Computed embeddings for {len(code_samples)} samples")
-            return embeddings
-        except Exception as e:
-            logger.error(f"Failed to compute embeddings: {e}")
-            # Return random embeddings as fallback
-            return np.random.rand(len(code_samples), 384)
+        embeddings = []
+        cache_hits = 0
+
+        for code in code_samples:
+            # Check cache first
+            cached_embedding = self.cache.get(code, self.model_name)
+            if cached_embedding is not None:
+                embeddings.append(cached_embedding)
+                cache_hits += 1
+            else:
+                # Compute and cache embedding
+                try:
+                    processed_code = preprocess_code_for_analysis(code)
+                    embedding = self.model.encode([processed_code])[0]
+                    embeddings.append(embedding)
+                    self.cache.put(code, self.model_name, embedding)
+                except Exception as e:
+                    logger.error(f"Failed to compute embedding: {e}")
+                    # Use random embedding as fallback
+                    embedding = np.random.rand(384)
+                    embeddings.append(embedding)
+
+        if cache_hits > 0:
+            logger.debug(f"Cache hits: {cache_hits}/{len(code_samples)} embeddings")
+
+        return np.array(embeddings)
 
     def compute_similarity(self, code1: str, code2: str) -> float:
         """
