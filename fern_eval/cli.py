@@ -76,6 +76,11 @@ Examples:
     eval_parser.add_argument(
         "--weights", help="Path to JSON file with custom evaluation weights"
     )
+    eval_parser.add_argument(
+        "--quality-focused", 
+        action="store_true",
+        help="Use quality-focused evaluation weights that reward architectural improvements"
+    )
 
     # Batch evaluation command
     batch_parser = subparsers.add_parser("batch", help="Batch evaluate multiple models")
@@ -170,7 +175,11 @@ def handle_evaluate_command(args) -> int:
             weights = load_custom_weights(args.weights)
 
         # Initialize evaluator
-        evaluator = UniversalCodeEvaluator(weights=weights, log_level=args.log_level)
+        evaluator = UniversalCodeEvaluator(
+            weights=weights, 
+            log_level=args.log_level,
+            quality_focused=args.quality_focused
+        )
 
         # Run evaluation
         print(f"Evaluating: {args.golden} vs {args.generated}")

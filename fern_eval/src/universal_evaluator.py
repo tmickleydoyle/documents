@@ -42,18 +42,22 @@ class UniversalCodeEvaluator:
     """
 
     def __init__(
-        self, weights: Optional[Dict[str, float]] = None, log_level: str = "INFO"
+        self, weights: Optional[Dict[str, float]] = None, log_level: str = "INFO", quality_focused: bool = False
     ):
         """Initialize the universal evaluator with optional custom weights."""
         setup_logging(log_level)
         # Import here to avoid circular import
-        from .config import DEFAULT_EVALUATION_WEIGHTS
+        from .config import DEFAULT_EVALUATION_WEIGHTS, QUALITY_FOCUSED_WEIGHTS
 
-        self.weights = (
-            weights or DEFAULT_EVALUATION_WEIGHTS.copy()
-        )  # Store weights for testing/introspection
+        if quality_focused and weights is None:
+            self.weights = QUALITY_FOCUSED_WEIGHTS.copy()
+            logger.info("Using quality-focused evaluation weights")
+        else:
+            self.weights = (
+                weights or DEFAULT_EVALUATION_WEIGHTS.copy()
+            )  # Store weights for testing/introspection
         self.parser = UniversalParser()
-        self.evaluator = ComprehensiveEvaluator(weights)
+        self.evaluator = ComprehensiveEvaluator(self.weights)
         self.file_matcher = IntelligentFileMatcher()
         self.adaptive_strategy = AdaptiveEvaluationStrategy(self.file_matcher)
         logger.info("Universal Code Evaluator initialized")

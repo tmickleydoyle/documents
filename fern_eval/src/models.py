@@ -58,6 +58,7 @@ class EvaluationResult:
     maintainability_score: float
     accessibility_score: float
     security_score: float
+    architectural_enhancement_score: float = 0.0
     detailed_analysis: Dict[str, Any] = field(default_factory=dict)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
@@ -72,6 +73,7 @@ class EvaluationResult:
         maintainability_score: float = 0.0,
         accessibility_score: float = 0.0,
         security_score: float = 0.0,
+        architectural_enhancement_score: float = 0.0,
         detailed_analysis: Optional[Dict[str, Any]] = None,
         metadata: Optional[Dict[str, Any]] = None,
         details: Optional[Dict[str, Any]] = None,
@@ -86,6 +88,7 @@ class EvaluationResult:
         self.maintainability_score = maintainability_score
         self.accessibility_score = accessibility_score
         self.security_score = security_score
+        self.architectural_enhancement_score = architectural_enhancement_score
 
         # Handle backward compatibility for 'details' parameter
         if details is not None and detailed_analysis is None:

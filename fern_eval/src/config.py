@@ -49,6 +49,17 @@ DEFAULT_EVALUATION_WEIGHTS: Dict[str, float] = {
     "accessibility": 0.05,
 }
 
+# Quality-focused weights that reward architectural improvements
+QUALITY_FOCUSED_WEIGHTS: Dict[str, float] = {
+    "semantic": 0.10,
+    "functional": 0.15,
+    "structural": 0.10,
+    "style": 0.15,
+    "maintainability": 0.25,
+    "accessibility": 0.15,
+    "architectural_enhancement": 0.10,
+}
+
 # Complexity thresholds
 COMPLEXITY_THRESHOLDS = {
     "simple": {"lines": 50, "complexity_score": 5},

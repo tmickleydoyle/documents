@@ -220,8 +220,12 @@ class QualityAnalyzer:
             golden_imports = set(extract_imports(golden))
             generated_imports = set(extract_imports(generated))
 
-            import_similarity = 0.0
-            if golden_imports:
+            # Fix: Handle cases where both have no imports (should be 1.0, not 0.0)
+            if not golden_imports and not generated_imports:
+                import_similarity = 1.0
+            elif not golden_imports:
+                import_similarity = 0.0
+            else:
                 common_imports = golden_imports & generated_imports
                 import_similarity = len(common_imports) / len(golden_imports)
 
@@ -229,8 +233,12 @@ class QualityAnalyzer:
             golden_jsx = set(extract_jsx_elements(golden))
             generated_jsx = set(extract_jsx_elements(generated))
 
-            jsx_similarity = 0.0
-            if golden_jsx:
+            # Fix: Handle cases where both have no JSX (should be 1.0, not 0.0)
+            if not golden_jsx and not generated_jsx:
+                jsx_similarity = 1.0
+            elif not golden_jsx:
+                jsx_similarity = 0.0
+            else:
                 common_jsx = golden_jsx & generated_jsx
                 jsx_similarity = len(common_jsx) / len(golden_jsx)
 
@@ -238,8 +246,12 @@ class QualityAnalyzer:
             golden_hooks = set(extract_hooks(golden))
             generated_hooks = set(extract_hooks(generated))
 
-            hooks_similarity = 0.0
-            if golden_hooks:
+            # Fix: Handle cases where both have no hooks (should be 1.0, not 0.0)
+            if not golden_hooks and not generated_hooks:
+                hooks_similarity = 1.0
+            elif not golden_hooks:
+                hooks_similarity = 0.0
+            else:
                 common_hooks = golden_hooks & generated_hooks
                 hooks_similarity = len(common_hooks) / len(golden_hooks)
 
@@ -469,6 +481,40 @@ class QualityAnalyzer:
         except Exception as e:
             logger.error(f"Error assessing accessibility: {e}")
             return 0.0
+    
+    def compare_accessibility(self, golden: str, generated: str) -> float:
+        """
+        Compare accessibility between golden and generated code.
+        
+        Args:
+            golden: Golden standard code
+            generated: Generated code
+            
+        Returns:
+            Accessibility similarity score (0-1)
+        """
+        try:
+            # If both codes are identical, return perfect score
+            if golden == generated:
+                return 1.0
+                
+            golden_score = self.assess_accessibility(golden)
+            generated_score = self.assess_accessibility(generated)
+            
+            # If both have the same accessibility level, consider them equivalent
+            if golden_score == generated_score:
+                return 1.0
+            
+            # If golden has no accessibility features, any accessibility in generated is good
+            if golden_score == 0:
+                return min(1.0, generated_score + 0.5)  # Bonus for adding accessibility
+            
+            # Calculate similarity based on how close the generated score is to golden
+            return 1.0 - abs(golden_score - generated_score)
+            
+        except Exception as e:
+            logger.error(f"Error comparing accessibility: {e}")
+            return 0.0
 
     def assess_security(self, code: str) -> float:
         """
@@ -505,6 +551,78 @@ class QualityAnalyzer:
         except Exception as e:
             logger.error(f"Error assessing security: {e}")
             return 0.5
+
+    def analyze_architectural_enhancement(self, golden: str, generated: str) -> float:
+        """
+        Analyze architectural enhancements in generated code compared to golden.
+        
+        This rewards sophisticated improvements like error handling, performance
+        optimizations, better state management, comprehensive testing, etc.
+        
+        Args:
+            golden: Golden standard code
+            generated: Generated code
+            
+        Returns:
+            Architectural enhancement score (0-1)
+        """
+        try:
+            enhancement_score = 0.0
+            total_possible = 0.0
+            
+            # Error handling enhancements
+            golden_error_handling = len(re.findall(r'try\s*{|catch\s*\(|\.catch\(|error|Error', golden))
+            generated_error_handling = len(re.findall(r'try\s*{|catch\s*\(|\.catch\(|error|Error', generated))
+            if generated_error_handling > golden_error_handling:
+                enhancement_score += 0.2
+            total_possible += 0.2
+            
+            # Performance optimizations (memoization, callbacks)
+            golden_perf = len(re.findall(r'useCallback|useMemo|React\.memo|React\.forwardRef', golden))
+            generated_perf = len(re.findall(r'useCallback|useMemo|React\.memo|React\.forwardRef', generated))
+            if generated_perf > golden_perf:
+                enhancement_score += 0.2
+            total_possible += 0.2
+            
+            # Advanced state management (middleware, persistence)
+            golden_state = len(re.findall(r'persist|devtools|immer|middleware', golden))
+            generated_state = len(re.findall(r'persist|devtools|immer|middleware', generated))
+            if generated_state > golden_state:
+                enhancement_score += 0.15
+            total_possible += 0.15
+            
+            # Testing enhancements
+            golden_tests = len(re.findall(r'test\(|it\(|describe\(|expect\(', golden))
+            generated_tests = len(re.findall(r'test\(|it\(|describe\(|expect\(', generated))
+            if generated_tests > golden_tests * 1.5:  # Significantly more tests
+                enhancement_score += 0.15
+            total_possible += 0.15
+            
+            # Type safety improvements
+            golden_types = len(re.findall(r'interface|type\s+\w+|:\s*\w+\[\]|:\s*string|:\s*number', golden))
+            generated_types = len(re.findall(r'interface|type\s+\w+|:\s*\w+\[\]|:\s*string|:\s*number', generated))
+            if generated_types > golden_types:
+                enhancement_score += 0.1
+            total_possible += 0.1
+            
+            # Accessibility improvements  
+            golden_a11y = len(re.findall(r'aria-|alt=|role=|tabIndex|onKeyDown', golden))
+            generated_a11y = len(re.findall(r'aria-|alt=|role=|tabIndex|onKeyDown', generated))
+            if generated_a11y > golden_a11y:
+                enhancement_score += 0.1
+            total_possible += 0.1
+            
+            # Loading states and skeleton UI
+            if ('loading' in generated.lower() or 'skeleton' in generated.lower()) and \
+               ('loading' not in golden.lower() and 'skeleton' not in golden.lower()):
+                enhancement_score += 0.1
+            total_possible += 0.1
+            
+            return enhancement_score / total_possible if total_possible > 0 else 0.0
+            
+        except Exception as e:
+            logger.error(f"Error analyzing architectural enhancement: {e}")
+            return 0.0
 
     def analyze_structure(self, code1: str, code2: str) -> float:
         """
@@ -591,10 +709,13 @@ class ComprehensiveEvaluator:
             maintainability_score = self.quality_analyzer.assess_maintainability(
                 generated_code
             )
-            accessibility_score = self.quality_analyzer.assess_accessibility(
-                generated_code
+            accessibility_score = self.quality_analyzer.compare_accessibility(
+                golden_code, generated_code
             )
             security_score = self.quality_analyzer.assess_security(generated_code)
+            architectural_enhancement_score = self.quality_analyzer.analyze_architectural_enhancement(
+                golden_code, generated_code
+            )
 
             # Calculate weighted overall similarity
             overall_similarity = (
@@ -604,11 +725,13 @@ class ComprehensiveEvaluator:
                 + self.weights.get("style", 0) * style_consistency
                 + self.weights.get("maintainability", 0) * maintainability_score
                 + self.weights.get("accessibility", 0) * accessibility_score
+                + self.weights.get("architectural_enhancement", 0) * architectural_enhancement_score
             )
 
             # Detailed analysis
             detailed_analysis = {
                 "semantic_similarity": float(semantic_similarity),
+                "architectural_enhancement_score": float(architectural_enhancement_score),
                 "code_length_ratio": safe_divide(
                     len(generated_code), len(golden_code), 1.0
                 ),
@@ -632,6 +755,7 @@ class ComprehensiveEvaluator:
                 maintainability_score=clamp(maintainability_score),
                 accessibility_score=clamp(accessibility_score),
                 security_score=clamp(security_score),
+                architectural_enhancement_score=clamp(architectural_enhancement_score),
                 detailed_analysis=detailed_analysis,
             )
 
