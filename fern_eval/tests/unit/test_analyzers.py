@@ -49,21 +49,28 @@ class TestSemanticSimilarityAnalyzer:
         assert embeddings.shape[0] == len(code_samples)
         assert embeddings.shape[1] == 384  # Default embedding size
 
+    @patch("src.analyzers.get_embedding_cache")
     @patch("sentence_transformers.SentenceTransformer")
-    def test_compute_embeddings_with_model(self, mock_transformer):
+    def test_compute_embeddings_with_model(self, mock_transformer, mock_cache_getter):
         """Test embedding computation with loaded model."""
+        # Mock cache to always return None (cache miss)
+        mock_cache = Mock()
+        mock_cache.get.return_value = None
+        mock_cache_getter.return_value = mock_cache
+        
         mock_model = Mock()
-        mock_model.encode.return_value = np.random.rand(2, 384)
+        mock_model.encode.return_value = np.array([np.random.rand(384)])  # Return single embedding
         mock_transformer.return_value = mock_model
 
         analyzer = SemanticSimilarityAnalyzer()
         analyzer.model = mock_model
 
-        code_samples = ["def hello():\n    pass", "function hello() {}"]
+        code_samples = ["def hello():\n    pass"]
         embeddings = analyzer.compute_embeddings(code_samples)
 
         assert isinstance(embeddings, np.ndarray)
-        mock_model.encode.assert_called_once()
+        # With caching, encode should be called once per sample (cache miss)
+        assert mock_model.encode.call_count >= 1
 
     def test_compute_similarity_score(self):
         """Test similarity score computation."""

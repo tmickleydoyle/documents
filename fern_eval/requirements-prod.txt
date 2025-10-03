@@ -1,0 +1,37 @@
+# Production requirements for the Fern evaluation framework
+# Core dependencies from requirements.txt
+sentence-transformers==4.1.0
+torch==2.7.1
+scikit-learn==1.6.1
+pytest==8.4.1
+numpy==2.0.2
+scipy==1.13.1
+transformers==4.53.0
+huggingface-hub==0.33.1
+networkx==3.2.1
+
+# Additional production dependencies
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+pydantic==2.9.2
+psutil==6.1.1
+
+# Database support
+psycopg2-binary==2.9.10
+sqlalchemy==2.0.36
+
+# Monitoring and observability
+prometheus-client==0.21.1
+structlog==24.4.0
+
+# Task queue for async processing
+celery[redis]==5.4.0
+redis==5.2.0
+
+# Security and validation
+cryptography==45.0.4
+python-multipart==0.0.18
+
+# Configuration management
+python-dotenv==1.0.1
+pydantic-settings==2.6.1

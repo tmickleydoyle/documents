@@ -160,11 +160,13 @@ database.yml
 connection.yml
 secrets.yml
 
-# Sample data files (if large)
+# Sample data files (if large) - but allow fern_eval demo data
 sample_data/
+!fern_eval/sample_data/
 *.csv
 *.parquet
 *.json
+!fern_eval/sample_data/**/*.json
 
 # Temporary files
 tmp/
@@ -216,3 +218,6 @@ local_settings.py
 *.sqlite
 *.sqlite3
 *.duckdb
+
+# Claude MD file
+CLAUDE.md

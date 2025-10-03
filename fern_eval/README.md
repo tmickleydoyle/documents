@@ -1,40 +1,16 @@
 # Universal Code Evaluation Framework
 
-[![Tests](https://img.shields.io/badge/tests-216%20passing-brightgreen)]()
-[![Python](https://img.shields.io/badge/python-3.8%2B-blue)]()
-[![License](https://img.shields.io/badge/license-MIT-green)]()
+A framework for evaluating AI-generated code using semantic similarity analysis and multi-dimensional quality metrics. This is a demo project showcasing automated code evaluation capabilities.
 
-A comprehensive, scientifically rigorous framework for evaluating AI-generated code using semantic similarity analysis and multi-dimensional quality metrics. Transform AI model evaluation from weeks of manual work to hours of automated, objective analysis.
+## 🎯 What This Does
 
-## 🎯 What This Framework Solves
-
-**The Problem**: Companies building AI coding tools spend weeks manually testing each new model with small sample sizes, leading to subjective decisions and poor model choices.
-
-**Our Solution**: An automated system that evaluates thousands of code samples in hours, measuring how well AI-generated code matches expert-written code across multiple dimensions of quality.
-
-## ✨ Key Features
-
-### 🧠 **Semantic Similarity Analysis**
-- Uses fine-tuned transformer models (CodeBERT/SentenceTransformers) to understand code meaning
-- Goes beyond syntax matching to evaluate functional equivalence
-- Supports any programming language (TypeScript, JavaScript, Python, Java, C++, etc.)
-
-### 📊 **Multi-Dimensional Evaluation**
-- **Functional Equivalence** (40%): Does the code produce the same output?
-- **Code Quality** (30%): Readability, maintainability, best practices
-- **Performance** (20%): Runtime efficiency and memory usage
-- **Style Consistency** (10%): Formatting and convention adherence
-
-### 🔄 **Flexible Evaluation Modes**
-- **Single File**: Compare two code files directly
-- **Application**: Intelligent matching and evaluation of entire codebases
-- **Batch**: Evaluate multiple AI models against a dataset simultaneously
-
-### 📈 **Comprehensive Analytics**
-- Model rankings and performance comparisons
-- Task-specific insights and recommendations
-- Export results as JSON or human-readable reports
-- Integration-ready for CI/CD pipelines
+Automatically evaluates how well AI-generated code matches reference code across multiple quality dimensions:
+- **Semantic Similarity**: Understanding code meaning using specialized code models (UniXcoder)
+- **Functional Equivalence**: Does the code produce the same output?
+- **Structural Similarity**: Code organization and patterns  
+- **Style Consistency**: Formatting and conventions
+- **Maintainability**: Code quality and readability
+- **Accessibility**: UI/UX considerations
 
 ## 🚀 Quick Start
 
@@ -45,7 +21,7 @@ cd fern_eval
 
 # Create virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
@@ -56,14 +32,14 @@ pip install -r requirements.txt
 #### Command Line Interface
 
 ```bash
-# Evaluate two files
-python cli.py evaluate --golden reference.tsx --generated model_output.tsx
+# Evaluate two applications (basic mode)
+python cli.py evaluate --golden sample_data/golden_standard --generated sample_data/generated_code
 
-# Evaluate applications with JSON output
-python cli.py evaluate --golden golden_app/ --generated generated_app/ --json results.json
+# Use quality-focused evaluation (rewards architectural improvements)
+python cli.py evaluate --golden sample_data/golden_standard --generated sample_data/complex_quality_generated --quality-focused
 
-# Batch evaluation
-python cli.py batch --input batch_config.json --output batch_results.json
+# Save results to JSON
+python cli.py evaluate --golden sample_data/golden_standard --generated sample_data/generated_code --json results.json
 ```
 
 #### Python API
@@ -71,22 +47,40 @@ python cli.py batch --input batch_config.json --output batch_results.json
 ```python
 from src.universal_evaluator import UniversalCodeEvaluator
 
-# Initialize evaluator
+# Traditional similarity-focused evaluation
 evaluator = UniversalCodeEvaluator()
+result = evaluator.evaluate("sample_data/golden_standard", "sample_data/generated_code")
 
-# Evaluate single files
-result = evaluator.evaluate(
-    golden_path="reference.tsx",
-    generated_path="model_output.tsx",
-    evaluation_type="file"
-)
+# Quality-focused evaluation (rewards sophisticated implementations)
+evaluator = UniversalCodeEvaluator(quality_focused=True)
+result = evaluator.evaluate("sample_data/golden_standard", "sample_data/complex_quality_generated")
 
 print(f"Overall Similarity: {result.overall_similarity:.3f}")
-print(f"Functional Equivalence: {result.functional_equivalence:.3f}")
+print(f"Maintainability: {result.maintainability_score:.3f}")
+print(f"Accessibility: {result.accessibility_score:.3f}")
+```
 
-# Generate human-readable report
-report = evaluator.generate_report(result)
-print(report)
+## 📊 Evaluation Modes
+
+### Traditional Mode (Similarity-Focused)
+- Emphasizes semantic and functional similarity to reference code
+- Good for basic correctness evaluation
+- May penalize sophisticated architectural improvements
+
+### Quality-Focused Mode
+- Rewards architectural enhancements like error handling, performance optimizations
+- Recognizes comprehensive testing, accessibility improvements, type safety
+- Better for evaluating complex-quality, production-ready code
+
+**Example Results:**
+```
+Traditional Mode:
+  Basic Code:       0.785
+  Complex Quality Code: 0.553  ❌ Quality penalized
+
+Quality-Focused Mode:  
+  Basic Code:       0.777
+  Complex Quality Code: 0.695  ✅ Quality rewarded
 ```
 
 ## 📋 Example Output
@@ -96,65 +90,45 @@ print(report)
 ======================================================================
 UNIVERSAL CODE EVALUATION REPORT
 ======================================================================
-Evaluation Type: file
-Golden File: demo_button.tsx
-Generated File: model_output.tsx
+Evaluation Type: application
+Golden Application: sample_data/golden_standard
+Generated Application: sample_data/complex_quality_generated
 
-EVALUATION SCORES:
-  Overall Similarity: 0.875
-  Functional Equivalence: 0.920
-  Structural Similarity: 0.810
-  Style Consistency: 0.890
+OVERALL SCORE: 0.695
 ```
 
 ### JSON Output
 ```json
 {
-  "overall_similarity": 0.875,
-  "functional_equivalence": 0.920,
-  "structural_similarity": 0.810,
-  "style_consistency": 0.890,
-  "complexity_delta": 0.05,
-  "performance_impact": 0.98,
-  "maintainability_score": 0.85,
+  "overall_similarity": 0.695,
+  "functional_equivalence": 0.333,
+  "structural_similarity": 0.456,
+  "style_consistency": 0.823,
+  "maintainability_score": 1.000,
+  "accessibility_score": 0.889,
+  "architectural_enhancement_score": 0.000,
   "detailed_analysis": {
-    "semantic_similarity": 0.91,
-    "code_length_ratio": 1.02,
+    "semantic_similarity": 0.234,
     "weights_used": {
-      "semantic": 0.25,
-      "functional": 0.25,
-      "structural": 0.20,
+      "semantic": 0.15,
+      "functional": 0.20,
+      "structural": 0.15,
       "style": 0.15,
-      "maintainability": 0.10,
-      "accessibility": 0.05
+      "maintainability": 0.20,
+      "accessibility": 0.10,
+      "architectural_enhancement": 0.05
     }
   }
 }
 ```
 
-## 🏗️ Architecture
-
-### Core Components
+## 🏗️ Core Components
 
 1. **Universal Parser**: Language-agnostic code analysis
-2. **Semantic Similarity Engine**: ML-powered code understanding
+2. **Semantic Similarity Engine**: ML-powered code understanding  
 3. **Quality Analyzer**: Multi-dimensional quality assessment
 4. **Matching System**: Intelligent file pairing for applications
 5. **Evaluation Engine**: Orchestrates the complete evaluation pipeline
-
-### Supported Languages
-
-- **JavaScript/TypeScript** (.js, .jsx, .ts, .tsx)
-- **Python** (.py)
-- **Java** (.java)
-- **C/C++** (.c, .cpp, .h)
-- **C#** (.cs)
-- **Go** (.go)
-- **Rust** (.rs)
-- **PHP** (.php)
-- **Ruby** (.rb)
-- **Swift** (.swift)
-- **Kotlin** (.kt)
 
 ## 🎯 Advanced Usage
 
@@ -164,7 +138,7 @@ EVALUATION SCORES:
 # Define custom weights for specific use cases
 custom_weights = {
     'semantic': 0.30,
-    'functional': 0.30,
+    'functional': 0.30, 
     'structural': 0.15,
     'style': 0.10,
     'maintainability': 0.10,
@@ -174,47 +148,16 @@ custom_weights = {
 evaluator = UniversalCodeEvaluator(weights=custom_weights)
 ```
 
-### Batch Evaluation Configuration
+### Batch Evaluation
 
-```json
-{
-  "models": [
-    {
-      "name": "gpt-4",
-      "base_path": "outputs/gpt4/",
-      "description": "GPT-4 generated code"
-    },
-    {
-      "name": "claude-3",
-      "base_path": "outputs/claude3/",
-      "description": "Claude-3 generated code"
-    }
-  ],
-  "golden_standard": "golden_standards/",
-  "output_format": "json",
-  "include_detailed_analysis": true
-}
-```
-
-### Application Structure Evaluation
-
-The framework automatically detects and matches files in application evaluations:
-
-```python
-result = evaluator.evaluate(
-    golden_path="reference_app/",
-    generated_path="model_app/",
-    evaluation_type="application"
-)
-
-# Access file matching statistics
-print(f"Files matched: {result.metadata['match_statistics']['total_files']}")
-print(f"Average confidence: {result.metadata['match_statistics']['avg_confidence']:.3f}")
+```bash
+python cli.py batch --golden sample_data/golden_standard \
+  --models sample_data/generated_code sample_data/complex_quality_generated \
+  --names "basic" "complex_quality" \
+  --report batch_results.txt
 ```
 
 ## 🧪 Testing
-
-The framework includes comprehensive test coverage with 216 passing tests:
 
 ```bash
 # Run all tests
@@ -223,87 +166,63 @@ python -m pytest
 # Run with coverage
 python -m pytest --cov=src --cov-report=html
 
-# Run performance benchmarks
-python -m pytest tests/performance/ -v
-
-# Run specific test categories
-python -m pytest tests/unit/ -v      # Unit tests
-python -m pytest tests/integration/ -v   # Integration tests
+# Run specific test files
+python -m pytest tests/test_analyzers.py -v
 ```
-
-### Test Categories
-
-- **Unit Tests** (150+ tests): Individual component testing
-- **Integration Tests** (50+ tests): End-to-end workflow testing
-- **Performance Tests** (15+ tests): Benchmarking and memory usage
 
 ## 📊 Performance
 
-- **Processing Speed**: Evaluate 1000+ code samples per hour
-- **Memory Efficiency**: Optimized for large-scale batch processing
-- **Accuracy**: 95%+ correlation with human expert assessments
-- **Scalability**: Linear scaling with dataset size
-
-### Benchmark Results
-
-| Operation | Processing Time | Memory Usage |
-|-----------|----------------|--------------|
-| Single file evaluation | ~15ms | <50MB |
-| Application evaluation | ~100ms | <200MB |
-| Batch (100 samples) | ~2 minutes | <400MB |
+- **Processing Speed**: ~15ms per file evaluation (may be slightly slower with UniXcoder)
+- **Memory Usage**: <500MB for application evaluation (increased due to larger model)
+- **Model Size**: ~500MB (UniXcoder) with ~90MB fallback (sentence-transformers)
+- **Accuracy**: Significantly improved semantic similarity for code evaluation
+- **Supported Languages**: JavaScript, TypeScript, Python, Java, C++, C#, Go, Rust, PHP, Ruby, Swift, Kotlin
 
 ## 🔧 Configuration
 
-### Environment Variables
-
-```bash
-# Optional: Specify custom model paths
-export EMBEDDING_MODEL="sentence-transformers/all-MiniLM-L6-v2"
-export HF_HOME="/path/to/huggingface/cache"
-
-# Logging configuration
-export LOG_LEVEL="INFO"
-```
-
-### Configuration File (config.py)
+The framework supports various configuration options through `src/config.py`:
 
 ```python
-# Evaluation weights
-DEFAULT_WEIGHTS = {
-    'semantic': 0.25,
-    'functional': 0.25,
-    'structural': 0.20,
-    'style': 0.15,
-    'maintainability': 0.10,
-    'accessibility': 0.05
+# Quality-focused weights (reward architectural improvements)
+QUALITY_FOCUSED_WEIGHTS = {
+    "semantic": 0.15,
+    "functional": 0.20,
+    "structural": 0.15, 
+    "style": 0.15,
+    "maintainability": 0.20,
+    "accessibility": 0.10,
+    "architectural_enhancement": 0.05,
 }
 
-# Model configuration
-DEFAULT_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-
-# File processing
-SUPPORTED_EXTENSIONS = {
-    '.py': 'python',
-    '.js': 'javascript',
-    '.jsx': 'javascript',
-    '.ts': 'typescript',
-    '.tsx': 'typescript',
-    # ... more languages
-}
+# Model configuration - Uses UniXcoder for superior code understanding
+DEFAULT_EMBEDDING_MODEL = "microsoft/unixcoder-base"
+FALLBACK_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 ```
 
-## 🚦 Error Handling
+### Model Details
 
-The framework provides robust error handling with graceful degradation:
+The framework now uses **Microsoft UniXcoder** as the default semantic similarity model:
+- **Superior Code Understanding**: Pre-trained on code, comments, and AST data
+- **Multi-modal Training**: Understands both code structure and natural language
+- **Better Similarity Detection**: Specialized for programming language semantics
+- **Fallback Support**: Automatically falls back to sentence-transformers if needed
 
-```python
-try:
-    result = evaluator.evaluate(golden_path, generated_path)
-    if result.metadata.get('evaluation_status') == 'error':
-        print(f"Evaluation error: {result.metadata.get('error_message')}")
-    else:
-        print(f"Success: {result.overall_similarity:.3f}")
-except Exception as e:
-    print(f"Framework error: {e}")
+## 📁 Project Structure
+
+```
+fern_eval/
+├── src/                      # Core framework code
+│   ├── analyzers.py         # Semantic similarity and quality analysis
+│   ├── universal_evaluator.py  # Main evaluation orchestrator
+│   ├── config.py            # Configuration and weights
+│   └── models.py            # Data models and result structures
+├── sample_data/             # Example datasets
+│   ├── golden_standard/     # Reference implementations
+│   ├── generated_code/      # Basic AI-generated code
+│   └── complex_quality_generated/  # Enhanced implementations
+├── tests/                   # Test suite
+├── cli.py                   # Command-line interface
+└── README.md               # This file
 ```
 
+This is a demonstration project showing how to build comprehensive code evaluation systems for AI-generated code.

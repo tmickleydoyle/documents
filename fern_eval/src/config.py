@@ -6,8 +6,8 @@ Supports any programming language and application structure.
 from typing import Dict, Set
 
 # Model configuration
-DEFAULT_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-FALLBACK_EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+DEFAULT_EMBEDDING_MODEL = "microsoft/unixcoder-base"
+FALLBACK_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 # Universal file extensions - organized by language families
 SUPPORTED_CODE_EXTENSIONS: Dict[str, Set[str]] = {
@@ -41,12 +41,22 @@ for extensions in SUPPORTED_CODE_EXTENSIONS.values():
 
 # Evaluation weights
 DEFAULT_EVALUATION_WEIGHTS: Dict[str, float] = {
-    "semantic": 0.25,
-    "functional": 0.25,
-    "structural": 0.20,
-    "style": 0.15,
-    "maintainability": 0.10,
-    "accessibility": 0.05,
+    "semantic": 0.80,
+    "functional": 0.08,
+    "structural": 0.05,
+    "style": 0.03,
+    "maintainability": 0.025,
+    "accessibility": 0.015,
+}
+
+# Quality-focused weights that reward architectural improvements
+QUALITY_FOCUSED_WEIGHTS: Dict[str, float] = {
+    "semantic": 0.50,
+    "functional": 0.125,
+    "structural": 0.085,
+    "style": 0.105,
+    "maintainability": 0.125,
+    "accessibility": 0.06,
 }
 
 # Complexity thresholds
