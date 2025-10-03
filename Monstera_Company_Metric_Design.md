@@ -90,24 +90,24 @@ By Week 20, achieve:
 ---
 
 ## Table of Contents
-1. [Executive Summary](#executive-summary) ⏱️ 5 min
-2. [The Business Case](#the-business-case) ⏱️ 10 min - **Start here for ROI details**
-3. [Visual Framework Overview](#visual-framework-overview) ⏱️ 5 min
-4. [Metrics as the Cornerstone of Decision-Making](#metrics-as-the-cornerstone-of-decision-making) ⏱️ 10 min
-5. [Core Principles](#core-principles) ⏱️ 10 min
-6. [The Monstera Framework](#the-monstera-framework) ⏱️ 15 min
-7. [Quick Wins: First 30-90 Days](#quick-wins-first-30-90-days) ⏱️ 10 min
-8. [Success Metrics and KPIs](#success-metrics-and-kpis) ⏱️ 10 min
-9. [User Lifecycle States](#user-lifecycle-states) ⏱️ 30 min - *Technical teams*
-10. [Product Taxonomy and Hierarchy](#product-taxonomy-and-hierarchy) ⏱️ 20 min - *Product teams*
-11. [Behavioral Segmentation Framework](#behavioral-segmentation-framework) ⏱️ 20 min - *Product teams*
-12. [Cross-Product Analytics](#cross-product-analytics) ⏱️ 20 min - *Product teams*
-13. [Implementation Guide](#implementation-guide) ⏱️ 30 min - *Implementation teams*
-14. [Dashboard Design](#dashboard-design) ⏱️ 20 min - *All teams*
-15. [Roles and Responsibilities](#roles-and-responsibilities) ⏱️ 10 min - *Leaders*
-16. [Data Governance and Quality](#data-governance-and-quality) ⏱️ 20 min - *Data teams*
-17. [Common Pitfalls and How to Avoid Them](#common-pitfalls-and-how-to-avoid-them) ⏱️ 15 min - **Recommended for all**
-18. [Getting Started Checklist](#getting-started-checklist) ⏱️ 20 min - *Implementation teams*
+1. [Executive Summary](#executive-summary)
+2. [The Business Case](#the-business-case) - **Start here for ROI details**
+3. [Visual Framework Overview](#visual-framework-overview)
+4. [Metrics as the Cornerstone of Decision-Making](#metrics-as-the-cornerstone-of-decision-making)
+5. [Core Principles](#core-principles)
+6. [The Monstera Framework](#the-monstera-framework)
+7. [Quick Wins: First 30-90 Days](#quick-wins-first-30-90-days)
+8. [Success Metrics and KPIs](#success-metrics-and-kpis)
+9. [User Lifecycle States](#user-lifecycle-states) *Technical teams*
+10. [Product Taxonomy and Hierarchy](#product-taxonomy-and-hierarchy) *Product teams*
+11. [Behavioral Segmentation Framework](#behavioral-segmentation-framework) *Product teams*
+12. [Cross-Product Analytics](#cross-product-analytics) *Product teams*
+13. [Implementation Guide](#implementation-guide) *Implementation teams*
+14. [Dashboard Design](#dashboard-design) *All teams*
+15. [Roles and Responsibilities](#roles-and-responsibilities) *Leaders*
+16. [Data Governance and Quality](#data-governance-and-quality) *Data teams*
+17. [Common Pitfalls and How to Avoid Them](#common-pitfalls-and-how-to-avoid-them) **Recommended for all**
+18. [Getting Started Checklist](#getting-started-checklist) *Implementation teams*
 
 ---
 
