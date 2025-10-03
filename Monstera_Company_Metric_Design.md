@@ -11,8 +11,6 @@ Most companies struggle with **metric drift** - different teams defining "active
 - **Lost revenue opportunities** from undetected churn signals
 - **Executive distrust** in data, reverting to gut-feel decisions
 
-The average company loses **15-25 hours per week** across teams reconciling conflicting metrics. At 50 employees, that's **$250K-400K annually** in wasted productivity.
-
 ### The Solution: Monstera Framework
 Monstera is a comprehensive metrics standardization framework that provides:
 - **Standardized lifecycle states** for users and accounts (8 user states, 9 account states)
