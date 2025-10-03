@@ -215,3 +215,4 @@ local_settings.py
 *.db
 *.sqlite
 *.sqlite3
+*.duckdb
