@@ -82,10 +82,10 @@ By Week 20, achieve:
 **The Cost of Inaction:** Companies that delay metrics standardization spend **2-3x more** fixing problems later than implementing the right foundation early. Technical debt compounds.
 
 ### Reading Guide
-- **Executives (5 min)**: Read this summary + "Business Case" section
-- **Product Leaders (20 min)**: Add "Monstera Framework" + "User Lifecycle States"
-- **Data Leaders (60 min)**: Read full document
-- **Implementation Teams (2-3 hours)**: Full document + Getting Started Checklist
+- **Executives**: Read this summary + "Business Case" section
+- **Product Leaders**: Add "Monstera Framework" + "User Lifecycle States"
+- **Data Leaders**: Read full document
+- **Implementation Teams**: Full document + Getting Started Checklist
 
 ---
 
